@@ -33,3 +33,11 @@
 Makefile.link
 Makefile.due
 Makefile.native
+src/_cc_flags
+src/_cpp_flags
+src/_linker_flags
+src/bmptk_fixed_size_stack.c
+src/main.bin
+src/main.elf
+src/main.ld
+src/main.map
