@@ -1,3 +1,6 @@
+#pragma once
+
+
 class ir_sender : public rtos::task<>
 {
 private:

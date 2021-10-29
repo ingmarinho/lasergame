@@ -1,12 +1,15 @@
+#pragma once
+
 #include "hwlib.hpp"
 #include "rtos.hpp"
+
 #include <array>
 
 class IRReceiverListener
 {
 
 public:
-	virtual void pause_detected(int pause) {}
+	virtual void pause_detected(int pause);
 };
 
 template <unsigned int MAX_NOF_LISTENERS>

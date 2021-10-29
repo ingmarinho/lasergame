@@ -1,19 +1,23 @@
 #include "hwlib.hpp"
 #include "rtos.hpp"
-
 #include "Statistics_Debug.h"
 #include "IR_Receiver.h"
 
-class Message_Decoder : public rtos::task<>, IRReceiveListener
-{
-   enum state_t {IDLE, MESSAGE};
+class Message_Decoder : public rtos::task<>, public IRReceiveListener{
+
+   enum state_t
+   {
+      IDLE,
+      MESSAGE
+   };
 
 private:
+
    state_t state = IDLE;
 
    rtos::channel<int, 1024> pausesChannel;
-   receiveIRController &receiveIRctrl;
-   IR_Receiver &IRReceiver;
+   // receiveIRController &receiveIRctrl;
+   IR_Receiver<1> &IRReceiverObject;
 
 public:
    Message_Decoder()
@@ -21,18 +25,15 @@ public:
       IR_Receiver.addIR_receiver_listener(this);
    }
 
-private:
    void pause_detected(int pause) override
    {
-      pauseChannel.write(pause);
+      pausesChannel.write(pause);
    }
 
+private:
    void isValid(const int &pause)
    {
-      switch (pause):
-         case pause:
-
-      return 200 > pause > 2000;
+      return (200 > pause && pause > 2000);
    }
 
    void main()
@@ -76,6 +77,7 @@ private:
       // }
    }
 };
+
 
 int main(void)
 {

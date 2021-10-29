@@ -9,7 +9,7 @@
 #############################################################################
 
 # source files in this project (main.cpp is automatically assumed)
-SOURCES := IR_Receiver.cpp
+SOURCES := IR_Receiver.h
 
 # header files in this project
 HEADERS :=
