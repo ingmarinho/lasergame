@@ -15,8 +15,8 @@ private:
    state_t state = IDLE;
 
    rtos::channel pausesChannel;
-   receiveIRController &receiveIRctrl;
-   IR_Receiver& IRReceiver; // Hier moet de constructor worden aangeroepen.
+   receiveIRController& receiveIRctrl;
+   IR_Receiver& IRReceiver;
 public:
    Message_Decoder()
    {
@@ -26,18 +26,28 @@ public:
 private:
    void pause_detected(int pause) override
    {
-
+      pauseChannel.write(pause);
    }
 
    void main()
    {
+
+      rtos::clock cl(100);
 
       for (;;)
       {
          switch (state)
          {
          case IDLE:
-
+            wait(cl);
+            if (pauseChannel.read() )
+            {
+               
+            }
+            else
+            {
+               state = IDLE
+            }
             break;
 
          case MESSAGE:
