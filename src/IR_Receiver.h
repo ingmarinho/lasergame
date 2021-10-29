@@ -12,12 +12,12 @@ template <unsigned int MAX_NOF_LISTENERS>
 class IR_Receiver : public rtos::task<>
 {
 	enum state_t =
-	{
-		IDLE,
-		SIGNAL
-	}
+		{
+			IDLE,
+			SIGNAL};
 
-	private : state_t state = IDLE;
+private:
+	state_t state = IDLE;
 
 	IRReceiverListener *IRreceiverlisteners[MAX_NOF_LISTENERS];
 	unsigned int nof_listeners = 0;
@@ -29,11 +29,12 @@ public:
 	{
 	}
 
-	void addIR_receveiver_listener(IRReceiverListener *irl)
+	void addIR_receiver_listener(IRReceiverListener *irl)
 	{
 		if (nof_listeners < MAX_NOF_LISTENERS)
 		{
 			IRreceiverlisteners[nof_listeners] = irl;
+			nof_listeners++;
 		}
 	}
 
@@ -46,7 +47,6 @@ private:
 
 		for (;;)
 		{
-
 			switch (state)
 			{
 			case IDLE:
