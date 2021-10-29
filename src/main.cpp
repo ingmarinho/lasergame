@@ -6,17 +6,15 @@
 
 class Message_Decoder : public rtos::task<>, IRReceiveListener
 {
-   enum state_t =
-       {
-           IDLE,
-           MESSAGE};
+   enum state_t {IDLE, MESSAGE};
 
 private:
    state_t state = IDLE;
 
-   rtos::channel pausesChannel;
-   receiveIRController& receiveIRctrl;
-   IR_Receiver& IRReceiver;
+   rtos::channel<int, 1024> pausesChannel;
+   receiveIRController &receiveIRctrl;
+   IR_Receiver &IRReceiver;
+
 public:
    Message_Decoder()
    {
@@ -27,6 +25,14 @@ private:
    void pause_detected(int pause) override
    {
       pauseChannel.write(pause);
+   }
+
+   void isValid(const int &pause)
+   {
+      switch (pause):
+         case pause:
+
+      return 200 > pause > 2000;
    }
 
    void main()
@@ -40,25 +46,34 @@ private:
          {
          case IDLE:
             wait(cl);
-            if (pauseChannel.read() )
+            if (pausesChannel.read())
             {
-               
-            }
-            else
-            {
-               state = IDLE
+               state = MESSAGE;
             }
             break;
 
          case MESSAGE:
+            int pause = pausesChannel.read();
 
-            break;
-
-         case default:
-
+            if (pause > 4000)
+            {
+               state = IDLE;
+            }
             break;
          }
       }
+      // if !isValid(pause) {state = IDLE; break;}
+
+      //    if (pause <)
+
+      //       switch ()
+
+      //          break;
+
+      // case default:
+
+      //    break;
+      // }
    }
 };
 
@@ -79,7 +94,6 @@ int main(void)
    // auto sw = hwlib::target::pin_in(hwlib::target::pins::d43);
 
    // ir_sender sender(ir, red, sw);
-
 
    rtos::run();
 }

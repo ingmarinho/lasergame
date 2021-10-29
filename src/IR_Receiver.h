@@ -1,5 +1,6 @@
 #include "hwlib.hpp"
 #include "rtos.hpp"
+#include <array>
 
 class IRReceiverListener
 {
@@ -11,29 +12,26 @@ public:
 template <unsigned int MAX_NOF_LISTENERS>
 class IR_Receiver : public rtos::task<>
 {
-	enum state_t =
-		{
-			IDLE,
-			SIGNAL};
+	enum state_t {IDLE, SIGNAL};
 
 private:
 	state_t state = IDLE;
 
-	IRReceiverListener *IRreceiverlisteners[MAX_NOF_LISTENERS];
+	std::array<IRReceiverListener*, MAX_NOF_LISTENERS> IRReceiverListenerArr;
 	unsigned int nof_listeners = 0;
 	hwlib::target::pin_in &tsop_signal;
 	hwlib::target::pin_out &led;
 
 public:
-	PauzeDetected(hwlib::target::pin_in &tsop_signal, hwlib::target::pin_out &led) : tsop_signal(tsop_signal), led(led)
+	IR_Receiver(hwlib::target::pin_in &tsop_signal, hwlib::target::pin_out &led) : tsop_signal(tsop_signal), led(led)
 	{
 	}
 
-	void addIR_receiver_listener(IRReceiverListener *irl)
+	void addIR_receiver_listener(IRReceiverListener &irl)
 	{
 		if (nof_listeners < MAX_NOF_LISTENERS)
 		{
-			IRreceiverlisteners[nof_listeners] = irl;
+			IRReceiverListenerArr[nof_listeners] = irl;
 			nof_listeners++;
 		}
 	}
@@ -61,9 +59,13 @@ private:
 				}
 				else if (IR_Signal)
 				{
-					for (int i = 0; i < IRReceiverListener.size(); i++)
+					// for (int i = 0; i < nof_listeners; i++)
+					// {
+					// 	IRReceiverListenerArr[i].pause_detected(n);
+					// }
+					for(auto & IRListener : IRReceiverListenerArr)
 					{
-						IRReceiverListener[i].pause_detected(n);
+						IRListener->pause_detected(n);
 					}
 					state = SIGNAL;
 
