@@ -3,7 +3,8 @@
 #include "Statistics_Debug.h"
 #include "IR_Receiver.h"
 
-class Message_Decoder : public rtos::task<>, public IRReceiveListener{
+class Message_Decoder : public rtos::task<>, public IRReceiverListener
+{
 
    enum state_t
    {
@@ -12,17 +13,16 @@ class Message_Decoder : public rtos::task<>, public IRReceiveListener{
    };
 
 private:
-
    state_t state = IDLE;
 
    rtos::channel<int, 1024> pausesChannel;
    // receiveIRController &receiveIRctrl;
-   IR_Receiver<1> &IRReceiverObject;
+   IR_Receiver<2> &IRReceiverObject;
 
 public:
    Message_Decoder()
    {
-      IR_Receiver.addIR_receiver_listener(this);
+      IRReceiverObject.addIR_receiver_listener(this);
    }
 
    void pause_detected(int pause) override
@@ -77,7 +77,6 @@ private:
       // }
    }
 };
-
 
 int main(void)
 {
