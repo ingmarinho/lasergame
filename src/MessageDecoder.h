@@ -29,9 +29,24 @@ public:
     }
 
 private:
-    bool isValid(const int &pause)
+    bool check(const uint16_t &message)
     {
-        return (200 > pause && pause > 2000);
+        int checkBitOne = 1;
+        int checkBitTwo = 6;
+
+        for (unsigned int checkBitThree = 11; checkBitThree < 15; checkBitThree++)
+        {
+            if (((message >> checkBitThree) & 1) == (((message >> checkBitOne) & 1) ^ ((message >> checkBitTwo) & 1)))
+            {
+                checkBitOne++;
+                checkBitTwo++;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        return true;
     }
 
     void main()
@@ -41,33 +56,40 @@ private:
             switch (state)
             {
             case IDLE:
-                if (pausesChannel.read())
-                {
-                    state = MESSAGE;
-                }
+
+                wait(pausesChannel);
+
+                // pause = pausesChannel.read()
+
+                state = MESSAGE;
+
                 break;
 
             case MESSAGE:
                 int pause = pausesChannel.read();
+                uint16_t message = 0;
 
-                if (pause > 4000)
+                for (unsigned int i = 0; i < 16; i++)
                 {
-                    state = IDLE;
+                    message <<= 1;
+
+                    if (pause > 200 && pause < 2000)
+                    {
+                        message |= (pause > 1000) ? 1 : 0;
+                        pause = pausesChannel.read();
+                    }
+                    else if (pause > 4000 && pause < 5000)
+                    {
+                        state = IDLE;
+                    }
                 }
+                state = IDLE;
+
                 break;
             }
         }
-        // if !isValid(pause) {state = IDLE; break;}
+    // case default:
 
-        //    if (pause <)
-
-        //       switch ()
-
-        //          break;
-
-        // case default:
-
-        //    break;
-        // }
+    //     break;
     }
 };

@@ -12,7 +12,7 @@ int main()
    // debug stats
    auto dumpButton = hwlib::target::pin_in(hwlib::target::pins::d10);
    auto clearButton = hwlib::target::pin_in(hwlib::target::pins::d11);
-   DebugStats debugStatsObject(dumpButton, clearButton, 0);
+   DebugStats debugStats(dumpButton, clearButton, 0);
 
    // auto tsop_signal = hwlib::target::pin_in(hwlib::target::pins::d8);
    // auto led = hwlib::target::pin_out(hwlib::target::pins::d9);
