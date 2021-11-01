@@ -1,6 +1,5 @@
 #pragma once
 
-
 class IRSender : public rtos::task<>
 {
 private:

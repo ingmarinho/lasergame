@@ -7,7 +7,7 @@
 #include "MessageDecoder.h"
 
 
-int main(void)
+int main()
 {
    // debug stats
    auto dumpButton = hwlib::target::pin_in(hwlib::target::pins::d10);

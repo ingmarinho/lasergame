@@ -1,8 +1,5 @@
 #pragma once
 
-#include "hwlib.hpp"
-#include "rtos.hpp"
-
 #include <array>
 
 class IRReceiverListener
@@ -15,22 +12,28 @@ public:
 template <unsigned int maxNumberOfListeners>
 class IRReceiver : public rtos::task<>
 {
-	enum state_t {IDLE, SIGNAL};
+	enum state_t
+	{
+		IDLE,
+		SIGNAL
+	};
 
 private:
 	state_t state = IDLE;
 
-	std::array<IRReceiverListener*, maxNumberOfListeners> IRReceiverListenerArr;
+	rtos::clock mainClock;
+
+	std::array<IRReceiverListener *, maxNumberOfListeners> IRReceiverListenerArr;
 	unsigned int currentNumberOfListeners = 0;
-	hwlib::target::pin_in &tsop_signal;
+	hwlib::target::pin_in &tsopSignal;
 	hwlib::target::pin_out &led;
 
 public:
-	IR_Receiver(hwlib::target::pin_in &tsop_signal, hwlib::target::pin_out &led) : tsop_signal(tsop_signal), led(led)
+	IRReceiver(hwlib::target::pin_in &tsopSignal, hwlib::target::pin_out &led) : mainClock(this, 100 * rtos::ms), tsopSignal(tsopSignal), led(led)
 	{
 	}
 
-	void addListener(IRReceiverListener &listener)
+	void addListener(IRReceiverListener *listener)
 	{
 		if (currentNumberOfListeners < maxNumberOfListeners)
 		{
@@ -44,7 +47,7 @@ private:
 	{
 
 		int n = 0;
-		rtos::clock cl(100);
+		bool IRSignal = tsopSignal.read();
 
 		for (;;)
 		{
@@ -52,45 +55,43 @@ private:
 			{
 			case IDLE:
 
-				wait(cl);
-				bool IR_Signal = tsop_signal.read();
+				wait(mainClock);
+				IRSignal = tsopSignal.read();
 
-				if (!IR_Signal)
+				if (!IRSignal)
 				{
 					n += 100;
 					state = IDLE;
 				}
-				else if (IR_Signal)
+				else if (IRSignal)
 				{
 					// for (int i = 0; i < nof_listeners; i++)
 					// {
 					// 	IRReceiverListenerArr[i].pause_detected(n);
 					// }
-					for(auto & IRListener : IRReceiverListenerArr)
+					for (auto &listener : IRReceiverListenerArr)
 					{
-						IRListener->pause_detected(n);
+						listener->pauseDetected(n);
 					}
 					state = SIGNAL;
-
-					break;
-
-				case SIGNAL:
-					wait(cl);
-
-					bool IR_Signal = tsop_signal.read();
-
-					if (IR_Signal)
-					{
-						state = SIGNAL;
-					}
-					else if (!IR_Signal)
-					{
-						n = 0;
-						state = IDLE;
-					}
-
-					break;
 				}
+				break;
+
+			case SIGNAL:
+				wait(mainClock);
+
+				IRSignal = tsopSignal.read();
+
+				if (IRSignal)
+				{
+					state = SIGNAL;
+				}
+				else if (!IRSignal)
+				{
+					n = 0;
+					state = IDLE;
+				}
+				break;
 			}
 		}
 	}
