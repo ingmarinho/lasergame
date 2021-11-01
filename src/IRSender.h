@@ -1,7 +1,7 @@
 #pragma once
 
 
-class ir_sender : public rtos::task<>
+class IRSender : public rtos::task<>
 {
 private:
    hwlib::target::d2_36kHz &ir;
@@ -9,7 +9,7 @@ private:
    hwlib::target::pin_in &sw;
 
 public:
-   ir_sender(hwlib::target::d2_36kHz &ir, hwlib::target::pin_out &red, hwlib::target::pin_in &sw)
+   IRSender(hwlib::target::d2_36kHz &ir, hwlib::target::pin_out &red, hwlib::target::pin_in &sw)
        : ir(ir), red(red), sw(sw)
    {
    }

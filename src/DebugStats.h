@@ -1,9 +1,6 @@
 #pragma once
 
-#include "hwlib.hpp"
-#include "rtos.hpp"
-
-class statistics_debug : public rtos::task<>
+class DebugStats : public rtos::task<>
 {
 private:
    hwlib::target::pin_in &buttonClear;
@@ -34,8 +31,8 @@ private:
    }
 
 public:
-   statistics_debug(hwlib::target::pin_in &buttonClear, hwlib::target::pin_in &buttonDump, unsigned int priority)
-       : rtos::task<>(priority, "DEBUG_TASK"), buttonClear(buttonClear), buttonDump(buttonDump)
+   DebugStats(hwlib::target::pin_in &buttonClear, hwlib::target::pin_in &buttonDump, unsigned int priority)
+       : rtos::task<>(priority, "DEBUGSTATS_TASK"), buttonClear(buttonClear), buttonDump(buttonDump)
    {
    }
 };

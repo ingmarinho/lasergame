@@ -9,19 +9,19 @@ class IRReceiverListener
 {
 
 public:
-	virtual void pause_detected(int pause);
+	virtual void pauseDetected(int pause);
 };
 
-template <unsigned int MAX_NOF_LISTENERS>
-class IR_Receiver : public rtos::task<>
+template <unsigned int maxNumberOfListeners>
+class IRReceiver : public rtos::task<>
 {
 	enum state_t {IDLE, SIGNAL};
 
 private:
 	state_t state = IDLE;
 
-	std::array<IRReceiverListener*, MAX_NOF_LISTENERS> IRReceiverListenerArr;
-	unsigned int nof_listeners = 0;
+	std::array<IRReceiverListener*, maxNumberOfListeners> IRReceiverListenerArr;
+	unsigned int currentNumberOfListeners = 0;
 	hwlib::target::pin_in &tsop_signal;
 	hwlib::target::pin_out &led;
 
@@ -30,12 +30,12 @@ public:
 	{
 	}
 
-	void addIR_receiver_listener(IRReceiverListener &irl)
+	void addListener(IRReceiverListener &listener)
 	{
-		if (nof_listeners < MAX_NOF_LISTENERS)
+		if (currentNumberOfListeners < maxNumberOfListeners)
 		{
-			IRReceiverListenerArr[nof_listeners] = irl;
-			nof_listeners++;
+			IRReceiverListenerArr[currentNumberOfListeners] = listener;
+			currentNumberOfListeners++;
 		}
 	}
 
