@@ -2,7 +2,7 @@
 #include "rtos.hpp"
 
 #include "DebugStats.h"
-#include "IRReceiver.h"
+#include "SendIRController.h"
 #include "IRSender.h"
 #include "MessageDecoder.h"
 
@@ -18,9 +18,10 @@ int main()
    auto led = hwlib::target::pin_out(hwlib::target::pins::d9);
    MessageDecoder messageDecoder(tsopSignal, led, 2, 1); // priority MessageDecoder, priority IRReceiver
 
-   // auto ir = hwlib::target::d2_36kHz();
-   // auto red = hwlib::target::pin_out(hwlib::target::pins::d42);
+   auto IR = hwlib::target::d2_36kHz();
+   auto red = hwlib::target::pin_out(hwlib::target::pins::d42);
    // auto sw = hwlib::target::pin_in(hwlib::target::pins::d43);
+   SendIRController sendIRcontroller(IR, red);
 
    // ir_sender sender(ir, red, sw);
 

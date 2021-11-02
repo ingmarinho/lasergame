@@ -1,5 +1,7 @@
 #pragma once
 
+#include "IRReceiver.h"
+
 class MessageDecoder : public rtos::task<>, public IRReceiverListener
 {
 

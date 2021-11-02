@@ -12,7 +12,7 @@
 SOURCES :=
 
 # header files in this project
-HEADERS := DebugStats.h IRReceiver.h IRSender.h MessageDecoder.h
+HEADERS := DebugStats.h IRReceiver.h IRSender.h SendIRController.h MessageDecoder.h
 
 # other places to look for files for this project
 SEARCH  := 
