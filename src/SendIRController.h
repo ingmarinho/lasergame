@@ -3,7 +3,7 @@
 class Led
 {
 private:
-	hwlib::target::pin_out &led 
+	hwlib::target::pin_out &led;
 
 public:
 	Led(hwlib::target::pin_out &led)
@@ -13,14 +13,14 @@ public:
 
 	void ZetAan()
 	{
-		red.write(1);
-		red.flush();
+		led.write(1);
+		led.flush();
 	}
 
 	void ZetUit()
 	{
-		red.write(0);
-		red.flush();
+		led.write(0);
+		led.flush();
 	}
 };
 
