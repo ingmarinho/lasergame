@@ -17,8 +17,8 @@ private:
     IRReceiver<1> irReceiver;
 
 public:
-    MessageDecoder(hwlib::target::pin_in &tsopSignal, hwlib::target::pin_out &led)
-        : pausesChannel(this), irReceiver(tsopSignal, led)
+    MessageDecoder(hwlib::target::pin_in &tsopSignal, hwlib::target::pin_out &led, unsigned int MessageDecoderPriority, unsigned int IRReceiverPriority)
+        : rtos::task<>(MessageDecoderPriority, "MESSAGEDECODER_TASK"), pausesChannel(this, "PAUSE_CLOCK"), irReceiver(tsopSignal, led, IRReceiverPriority)
     {
         irReceiver.addListener(this);
     }
@@ -31,8 +31,8 @@ public:
 private:
     bool check(const uint16_t &message)
     {
-        int checkBitOne = 1;
-        int checkBitTwo = 6;
+        unsigned int checkBitOne = 1;
+        unsigned int checkBitTwo = 6;
 
         for (unsigned int checkBitThree = 11; checkBitThree < 15; checkBitThree++)
         {
@@ -88,8 +88,5 @@ private:
                 break;
             }
         }
-    // case default:
-
-    //     break;
     }
 };

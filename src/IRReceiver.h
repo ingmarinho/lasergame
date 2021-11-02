@@ -29,7 +29,8 @@ private:
 	hwlib::target::pin_out &led;
 
 public:
-	IRReceiver(hwlib::target::pin_in &tsopSignal, hwlib::target::pin_out &led) : mainClock(this, 100 * rtos::ms), tsopSignal(tsopSignal), led(led)
+	IRReceiver(hwlib::target::pin_in &tsopSignal, hwlib::target::pin_out &led, unsigned int priority)
+		: rtos::task<>(priority, "IRRECEIVER_TASK"), mainClock(this, 100 * rtos::ms, "IRRECEIVER_CLOCK"), tsopSignal(tsopSignal), led(led)
 	{
 	}
 
@@ -65,10 +66,6 @@ private:
 				}
 				else if (IRSignal)
 				{
-					// for (int i = 0; i < nof_listeners; i++)
-					// {
-					// 	IRReceiverListenerArr[i].pause_detected(n);
-					// }
 					for (auto &listener : IRReceiverListenerArr)
 					{
 						listener->pauseDetected(n);
