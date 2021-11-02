@@ -3,7 +3,10 @@
 class Led
 {
 private:
-	hwlib::target::pin_out &led public : Led(hwlib::target::pin_out &led)
+	hwlib::target::pin_out &led 
+
+public:
+	Led(hwlib::target::pin_out &led)
 		: led(led)
 	{
 	}
