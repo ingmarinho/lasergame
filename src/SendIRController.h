@@ -53,6 +53,7 @@ class SendIRController : public rtos::task<>
 	enum state_t
 	{
 		IDLE,
+		TUSSENPAUZE,
 		SENDBITS,
 		STARTBIT_HOOG,
 		STARTBIT_LAAG
@@ -63,8 +64,7 @@ class SendIRController : public rtos::task<>
 		SEND1_SIGNAL,
 		SEND1_PAUSE,
 		SEND0_SIGNAL,
-		SEND0_PAUSE,
-        TUSSENPAUZE
+		SEND0_PAUSE
 	};
 
 private:
@@ -119,18 +119,19 @@ private:
 				wait(delay);
 				state = SENDBITS;
 				break;
-                
-            case TUSSENPAUZE:
-                delay.set(3000);
-                wait(delay);
-                state = GETBIT;
+
+			case TUSSENPAUZE:
+				delay.set(3000);
+				wait(delay);
+				state = SENDBITS;
+				break;
 
 			case SENDBITS:
 				switch (stateS)
 				{
 
 				case GETBIT:
-					if (current >= 15)
+					if (current > 15)
 					{
 						current = 0;
 						sendcounter++;
@@ -141,7 +142,8 @@ private:
 							state = IDLE;
 							break;
 						}
-                        state = TUSSENPAUZE;
+						state = TUSSENPAUZE;
+						break;
 					}
 					mask = 0x1;
 					mask = mask << current;
@@ -185,16 +187,16 @@ private:
 					stateS = SEND1_PAUSE;
 					break;
 
-				// default:
-				// 	// hwlib::wait_ms(1);
-				// 	// hwlib::cout << "broken" << hwlib::endl;
-				// 	break;
+					// default:
+					// 	// hwlib::wait_ms(1);
+					// 	// hwlib::cout << "broken" << hwlib::endl;
+					// 	break;
 				}
 				break;
-			// default:
-			// 	// hwlib::wait_ms(1);
-			// 	// hwlib::cout << "broken2" << hwlib::endl;
-			// 	break;
+				// default:
+				// 	// hwlib::wait_ms(1);
+				// 	// hwlib::cout << "broken2" << hwlib::endl;
+				// 	break;
 			}
 		}
 	}
