@@ -2,9 +2,8 @@
 #include "rtos.hpp"
 
 #include "DebugStats.h"
-#include "SendIRController.h"
-#include "IRSender.h"
 #include "MessageDecoder.h"
+#include "SendIRController.h"
 
 
 int main()

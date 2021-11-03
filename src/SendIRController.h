@@ -11,13 +11,13 @@ public:
 	{
 	}
 
-	void ZetAan()
+	void turnOn()
 	{
 		led.write(1);
 		led.flush();
 	}
 
-	void ZetUit()
+	void turnOff()
 	{
 		led.write(0);
 		led.flush();
@@ -27,24 +27,24 @@ public:
 class IRTransmitter
 {
 private:
-	hwlib::target::d2_36kHz &ir;
+	hwlib::target::d2_36kHz &IR;
 
 public:
-	IRTransmitter(hwlib::target::d2_36kHz &ir)
-		: ir(ir)
+	IRTransmitter(hwlib::target::d2_36kHz &IR)
+		: IR(IR)
 	{
 	}
 
-	void ZetAan()
+	void turnOn()
 	{
-		ir.write(1);
-		ir.flush();
+		IR.write(1);
+		IR.flush();
 	}
 
-	void ZetUit()
+	void turnOff()
 	{
-		ir.write(0);
-		ir.flush();
+		IR.write(0);
+		IR.flush();
 	}
 };
 
@@ -57,60 +57,60 @@ class SendIRController : public rtos::task<>
 	};
 	enum state_s
 	{
-		getbit,
-		send1_signal,
-		send1_pause,
-		send0_signal,
-		send0_pause
+		GETBIT,
+		SEND1_SIGNAL,
+		SEND1_PAUSE,
+		SEND0_SIGNAL,
+		SEND0_PAUSE
 	};
 
 private:
 	state_t state = IDLE;
-	state_s stateS = getbit;
+	state_s stateS = GETBIT;
 	rtos::timer delay;
 	rtos::channel<uint16_t, 1024> sendChannel;
 	IRTransmitter IR;
 	Led led;
 
 	int sendcounter = 0;
-	int huidig = 0;
-	uint16_t msg = 0x0;
+	int current = 0;
+	uint16_t message = 0x0;
 
 public:
-	SendIRController(hwlib::target::d2_36kHz &ir, hwlib::target::pin_out &led)
-		: delay(this, "delay"), sendChannel(this, "SEND_CHANNEL"), IR(ir), led(led)
+	SendIRController(hwlib::target::d2_36kHz &IR, hwlib::target::pin_out &led)
+		: delay(this, "delay"), sendChannel(this, "SEND_CHANNEL"), IR(IR), led(led)
 	{
 	}
 
-	void SendMessage(uint16_t msg)
+	void SendMessage(uint16_t message)
 	{
-		sendChannel.write(msg);
+		sendChannel.write(message);
 	}
 
 private:
 	void main()
 	{
-		uint16_t masker = 0x1;
-		uint16_t res = masker & msg;
-		
+		uint16_t mask = 0x1;
+		uint16_t res = mask & message;
+
 		for (;;)
 		{
 			switch (state)
 			{
 			case IDLE:
 				wait(sendChannel);
-				msg = sendChannel.read();
+				message = sendChannel.read();
 				state = SENDBITS;
 				break;
 
 			case SENDBITS:
 				switch (stateS)
 				{
-					
-				case getbit:
-					if (huidig >= 15)
+
+				case GETBIT:
+					if (current >= 15)
 					{
-						huidig = 0;
+						current = 0;
 						sendcounter++;
 						if (sendcounter == 2)
 						{
@@ -118,59 +118,58 @@ private:
 							state = IDLE;
 						}
 					}
-					masker = 0x1;
-					masker = masker << huidig;
-					res = masker & msg;
-					huidig++;
+					mask = 0x1;
+					mask = mask << current;
+					res = mask & message;
+					current++;
 					if (res > 0)
 					{
-						stateS = send1_signal;
+						stateS = SEND1_SIGNAL;
 					}
 					else
 					{
-						stateS = send0_signal;
+						stateS = SEND0_SIGNAL;
 					}
 					break;
-			
-				
-				case send0_pause:
-					IR.ZetUit();
+
+				case SEND0_PAUSE:
+					IR.turnOff();
 					delay.set(1600);
 					wait(delay);
-					stateS = getbit;
+					stateS = GETBIT;
 					break;
 
-				case send0_signal:
-					IR.ZetAan();
+				case SEND0_SIGNAL:
+					IR.turnOn();
 					delay.set(800);
 					wait(delay);
-					stateS = send0_pause;
+					stateS = SEND0_PAUSE;
 					break;
 
-				case send1_pause:
-					IR.ZetUit();
+				case SEND1_PAUSE:
+					IR.turnOff();
 					delay.set(800);
 					wait(delay);
-					stateS = getbit;
+					stateS = GETBIT;
 					break;
 
-				case send1_signal:
-					IR.ZetAan();
+				case SEND1_SIGNAL:
+					IR.turnOn();
 					delay.set(1600);
 					wait(delay);
-					stateS = send1_pause;
+					stateS = SEND1_PAUSE;
 					break;
 
 				default:
-				hwlib::wait_ms(1);
-				hwlib::cout << "kapot" << hwlib::endl;
-				break; 
+					hwlib::wait_ms(1);
+					hwlib::cout << "broken" << hwlib::endl;
+					break;
 				}
 				break;
-				default:
-				 hwlib::wait_ms(1);
-				hwlib::cout << "kapot2" << hwlib::endl;
-				break; 
+			default:
+				hwlib::wait_ms(1);
+				hwlib::cout << "broken2" << hwlib::endl;
+				break;
 			}
 		}
 	}
