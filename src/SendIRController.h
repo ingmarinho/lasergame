@@ -63,7 +63,8 @@ class SendIRController : public rtos::task<>
 		SEND1_SIGNAL,
 		SEND1_PAUSE,
 		SEND0_SIGNAL,
-		SEND0_PAUSE
+		SEND0_PAUSE,
+        TUSSENPAUZE
 	};
 
 private:
@@ -118,6 +119,11 @@ private:
 				wait(delay);
 				state = SENDBITS;
 				break;
+                
+            case TUSSENPAUZE:
+                delay.set(3000);
+                wait(delay);
+                state = GETBIT;
 
 			case SENDBITS:
 				switch (stateS)
@@ -135,9 +141,7 @@ private:
 							state = IDLE;
 							break;
 						}
-
-						delay.set(3000);
-						wait(delay);
+                        state = TUSSENPAUZE;
 					}
 					mask = 0x1;
 					mask = mask << current;
