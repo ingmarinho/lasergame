@@ -91,7 +91,7 @@ private:
                     }
                 }
 
-                hwlib::cout << message << hwlib::endl;
+                // hwlib::cout << message << hwlib::endl;
 
                 state = IDLE;
 

@@ -54,8 +54,8 @@ class SendIRController : public rtos::task<>
 	{
 		IDLE,
 		SENDBITS,
-        STARTBIT_HOOG,
-        STARTBIT_LAAG
+		STARTBIT_HOOG,
+		STARTBIT_LAAG
 	};
 	enum state_s
 	{
@@ -104,21 +104,21 @@ private:
 				message = sendChannel.read();
 				state = STARTBIT_HOOG;
 				break;
-                
-            case STARTBIT_HOOG:
-                IR.turnOn;
-                delay.set(9000);
-                wait(delay);
-                state = STARTBIT_LAAG;
-                break;
-                
-            case STARTBIT_LAAG:
-                IR.turnOff;
-                delay.set(4500);
-                wait(delay);
-                state = SENDBITS;
-                break;
-                
+
+			case STARTBIT_HOOG:
+				IR.turnOn();
+				delay.set(9000);
+				wait(delay);
+				state = STARTBIT_LAAG;
+				break;
+
+			case STARTBIT_LAAG:
+				IR.turnOff();
+				delay.set(4500);
+				wait(delay);
+				state = SENDBITS;
+				break;
+
 			case SENDBITS:
 				switch (stateS)
 				{
@@ -131,8 +131,13 @@ private:
 						if (sendcounter == 2)
 						{
 							sendcounter = 0;
+
 							state = IDLE;
+							break;
 						}
+
+						delay.set(3000);
+						wait(delay);
 					}
 					mask = 0x1;
 					mask = mask << current;
@@ -176,16 +181,16 @@ private:
 					stateS = SEND1_PAUSE;
 					break;
 
-				default:
-					hwlib::wait_ms(1);
-					hwlib::cout << "broken" << hwlib::endl;
-					break;
+				// default:
+				// 	// hwlib::wait_ms(1);
+				// 	// hwlib::cout << "broken" << hwlib::endl;
+				// 	break;
 				}
 				break;
-			default:
-				hwlib::wait_ms(1);
-				hwlib::cout << "broken2" << hwlib::endl;
-				break;
+			// default:
+			// 	// hwlib::wait_ms(1);
+			// 	// hwlib::cout << "broken2" << hwlib::endl;
+			// 	break;
 			}
 		}
 	}
