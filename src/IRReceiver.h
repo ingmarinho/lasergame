@@ -30,7 +30,7 @@ private:
 
 public:
 	IRReceiver(hwlib::target::pin_in &tsopSignal, hwlib::target::pin_out &led, unsigned int priority)
-		: rtos::task<>(priority, "IRRECEIVER_TASK"), mainClock(this, 100 * rtos::ms, "IRRECEIVER_CLOCK"), tsopSignal(tsopSignal), led(led)
+		: rtos::task<>(priority, "IRRECEIVER_TASK"), mainClock(this, 100 * rtos::us, "IRRECEIVER_CLOCK"), tsopSignal(tsopSignal), led(led)
 	{
 	}
 
