@@ -20,7 +20,7 @@ private:
 
 public:
     MessageDecoder(hwlib::target::pin_in &tsopSignal, hwlib::target::pin_out &led, unsigned int MessageDecoderPriority, unsigned int IRReceiverPriority)
-        : rtos::task<>(MessageDecoderPriority, "MESSAGEDECODER_TASK"), pausesChannel(this, "PAUSE_CLOCK"), irReceiver(tsopSignal, led, IRReceiverPriority)
+        : rtos::task<>(MessageDecoderPriority, "MESSAGEDECODER_TASK"), pausesChannel(this, "PAUSE_CHANNEL"), irReceiver(tsopSignal, led, IRReceiverPriority)
     {
         irReceiver.addListener(this);
     }
@@ -85,6 +85,9 @@ private:
                         state = IDLE;
                     }
                 }
+
+                hwlib::cout << message << hwlib::endl;
+
                 state = IDLE;
 
                 break;

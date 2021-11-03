@@ -2,8 +2,11 @@
 #include "rtos.hpp"
 
 #include "DebugStats.h"
+#include "SendTest.h"
+
 #include "MessageDecoder.h"
 #include "SendIRController.h"
+
 
 
 int main()
@@ -22,7 +25,10 @@ int main()
    // auto sw = hwlib::target::pin_in(hwlib::target::pins::d43);
    SendIRController sendIRcontroller(IR, red);
 
-   // ir_sender sender(ir, red, sw);
+   // testing
+   SendTest sendTest(sendIRcontroller);
+   
 
    rtos::run();
+   // ir_sender sender(ir, red, sw);
 }

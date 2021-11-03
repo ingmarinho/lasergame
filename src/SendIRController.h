@@ -82,7 +82,7 @@ public:
 	{
 	}
 
-	void SendMessage(uint16_t message)
+	void sendMessage(uint16_t message)
 	{
 		sendChannel.write(message);
 	}
