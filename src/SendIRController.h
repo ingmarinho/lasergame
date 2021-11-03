@@ -53,7 +53,9 @@ class SendIRController : public rtos::task<>
 	enum state_t
 	{
 		IDLE,
-		SENDBITS
+		SENDBITS,
+        STARTBIT_HOOG,
+        STARTBIT_LAAG
 	};
 	enum state_s
 	{
@@ -100,9 +102,23 @@ private:
 			case IDLE:
 				wait(sendChannel);
 				message = sendChannel.read();
-				state = SENDBITS;
+				state = STARTBIT_HOOG;
 				break;
-
+                
+            case STARTBIT_HOOG:
+                IR.turnOn;
+                delay.set(9000);
+                wait(delay);
+                state = STARTBIT_LAAG;
+                break;
+                
+            case STARTBIT_LAAG:
+                IR.turnOff;
+                delay.set(4500);
+                wait(delay);
+                state = SENDBITS;
+                break;
+                
 			case SENDBITS:
 				switch (stateS)
 				{
