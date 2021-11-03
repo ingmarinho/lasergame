@@ -69,6 +69,9 @@ private:
 
             case MESSAGE:
                 int pause = pausesChannel.read();
+
+                // hwlib::cout << pause << hwlib::endl;
+
                 uint16_t message = 0;
 
                 for (unsigned int i = 0; i < 16; i++)
@@ -79,9 +82,11 @@ private:
                     {
                         message |= (pause > 1000) ? 1 : 0;
                         pause = pausesChannel.read();
+                        // hwlib::cout << pause << hwlib::endl;
                     }
                     else if (pause > 4000 && pause < 5000)
                     {
+                        hwlib::cout << "error\n";
                         state = IDLE;
                     }
                 }

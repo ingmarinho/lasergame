@@ -8,8 +8,8 @@ private:
     SendIRController &sendIRController;
 
 public:
-    SendTest(SendIRController &sendIRController)
-        : rtos::task<>(4, "SENDTEST_TASK"), sendIRController(sendIRController)
+    SendTest(SendIRController &sendIRController, unsigned int priority)
+        : rtos::task<>(priority, "SENDTEST_TASK"), sendIRController(sendIRController)
     {
     }
 
@@ -20,7 +20,7 @@ public:
         while (true)
         {
             sendIRController.sendMessage(message);
-            hwlib::wait_ms(500);
+            hwlib::wait_ms(5000);
         }
     }
 };

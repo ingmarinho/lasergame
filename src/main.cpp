@@ -26,8 +26,8 @@ int main()
    SendIRController sendIRcontroller(IR, red);
 
    // testing
-   SendTest sendTest(sendIRcontroller);
-   
+   SendTest sendTest(sendIRcontroller, 4);
+
 
    rtos::run();
    // ir_sender sender(ir, red, sw);
