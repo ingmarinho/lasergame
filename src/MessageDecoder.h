@@ -1,6 +1,7 @@
 #pragma once
 
 #include "IRReceiver.h"
+#include "Logger.h"
 
 class MessageDecoder : public rtos::task<>, public IRReceiverListener
 {
@@ -17,10 +18,11 @@ private:
     rtos::channel<int, 1024> pausesChannel;
     // receiveIRController &receiveIRctrl;
     IRReceiver<1> irReceiver;
+    Logger &logger;
 
 public:
-    MessageDecoder(hwlib::target::pin_in &tsopSignal, hwlib::target::pin_out &led, unsigned int MessageDecoderPriority, unsigned int IRReceiverPriority)
-        : rtos::task<>(MessageDecoderPriority, "MESSAGEDECODER_TASK"), pausesChannel(this, "PAUSE_CHANNEL"), irReceiver(tsopSignal, led, IRReceiverPriority)
+    MessageDecoder(hwlib::target::pin_in &tsopSignal, hwlib::target::pin_out &led, Logger &logger, unsigned int MessageDecoderPriority, unsigned int IRReceiverPriority)
+        : rtos::task<>(MessageDecoderPriority, "MESSAGEDECODER_TASK"), pausesChannel(this, "PAUSE_CHANNEL"), irReceiver(tsopSignal, led, IRReceiverPriority), logger(logger)
     {
         irReceiver.addListener(this);
     }
@@ -53,6 +55,9 @@ private:
 
     void main()
     {
+        int pause;
+        uint16_t message = 0x0;
+
         for (;;)
         {
             switch (state)
@@ -61,18 +66,22 @@ private:
 
                 wait(pausesChannel);
 
-                // pause = pausesChannel.read()
+                pause = pausesChannel.read();
+                // logger.addLog(pause);
 
-                state = MESSAGE;
+                if (pause > 2500 && pause < 5000)
+                {
+                    state = MESSAGE;
+                    logger.addLog(1001);
+                }
 
                 break;
 
             case MESSAGE:
-                int pause = pausesChannel.read();
+                message = 0x0;
+                pause = pausesChannel.read();
 
                 // hwlib::cout << pause << hwlib::endl;
-
-                uint16_t message = 0;
 
                 for (unsigned int i = 0; i < 16; i++)
                 {
@@ -80,18 +89,21 @@ private:
 
                     if (pause > 200 && pause < 2000)
                     {
-                        message |= (pause > 1000) ? 1 : 0;
+                        message |= (pause > 1000) ? 0 : 1;
                         pause = pausesChannel.read();
                         // hwlib::cout << pause << hwlib::endl;
                     }
-                    else if (pause > 4000 && pause < 5000)
+                    else if (pause > 2500 && pause < 5000)
                     {
                         hwlib::cout << "error\n";
                         state = IDLE;
+                        break;
                     }
                 }
 
-                // hwlib::cout << message << hwlib::endl;
+                // logger.addLog(message == 0xFF0F ? "Correct" : "Incorrect");
+                logger.addLog(message);
+                // logger.addLog(message);
 
                 state = IDLE;
 

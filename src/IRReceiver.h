@@ -57,7 +57,7 @@ private:
 			case IDLE:
 
 				wait(mainClock);
-				IRSignal = tsopSignal.read();
+				IRSignal = !tsopSignal.read();
 
 				if (!IRSignal)
 				{
@@ -77,7 +77,7 @@ private:
 			case SIGNAL:
 				wait(mainClock);
 
-				IRSignal = tsopSignal.read();
+				IRSignal = !tsopSignal.read();
 
 				if (IRSignal)
 				{

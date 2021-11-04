@@ -115,7 +115,7 @@ private:
 
 			case STARTBIT_LAAG:
 				IR.turnOff();
-				delay.set(4500);
+				delay.set(4000);
 				wait(delay);
 				state = SENDBITS;
 				break;
@@ -131,8 +131,15 @@ private:
 				{
 
 				case GETBIT:
+				
 					if (current > 15)
 					{
+
+						IR.turnOn();
+						delay.set(300);
+						wait(delay);
+						IR.turnOff();
+						
 						current = 0;
 						sendcounter++;
 						if (sendcounter == 2)
@@ -164,12 +171,14 @@ private:
 					delay.set(1600);
 					wait(delay);
 					stateS = GETBIT;
+					// stateS = SEND0_SIGNAL;
 					break;
 
 				case SEND0_SIGNAL:
 					IR.turnOn();
 					delay.set(800);
 					wait(delay);
+					// stateS = GETBIT;
 					stateS = SEND0_PAUSE;
 					break;
 
@@ -178,12 +187,14 @@ private:
 					delay.set(800);
 					wait(delay);
 					stateS = GETBIT;
+					// stateS = SEND1_SIGNAL;
 					break;
 
 				case SEND1_SIGNAL:
 					IR.turnOn();
 					delay.set(1600);
 					wait(delay);
+					// stateS = GETBIT;
 					stateS = SEND1_PAUSE;
 					break;
 
