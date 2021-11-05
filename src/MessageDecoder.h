@@ -69,10 +69,10 @@ private:
                 pause = pausesChannel.read();
                 // logger.addLog(pause);
 
-                if (pause > 2500 && pause < 5000)
+                if (pause > 3500 && pause < 5000)
                 {
                     state = MESSAGE;
-                    logger.addLog(1001);
+                    
                 }
 
                 break;
@@ -85,15 +85,17 @@ private:
 
                 for (unsigned int i = 0; i < 16; i++)
                 {
-                    message <<= 1;
+                    // message >>= 1; 
 
                     if (pause > 200 && pause < 2000)
                     {
-                        message |= (pause > 1000) ? 0 : 1;
+                        message |= (((pause > 1000) ? 0 : 1) << i);
                         pause = pausesChannel.read();
+                        // logger.addLog(i);
                         // hwlib::cout << pause << hwlib::endl;
                     }
-                    else if (pause > 2500 && pause < 5000)
+
+                    else if (pause > 3500 && pause < 5000)
                     {
                         hwlib::cout << "error\n";
                         state = IDLE;
