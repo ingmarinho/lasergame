@@ -1,15 +1,19 @@
 #pragma once
 
 #include "SendIRController.h"
+#include "SpeakerController.h"
 
 class SendTest : public rtos::task<>
 {
 private:
     SendIRController &sendIRController;
 
+    // testing sound
+    SpeakerController &speakerController;
+
 public:
-    SendTest(SendIRController &sendIRController, unsigned int priority)
-        : rtos::task<>(priority, "SENDTEST_TASK"), sendIRController(sendIRController)
+    SendTest(SendIRController &sendIRController, SpeakerController& speakerController, unsigned int priority)
+        : rtos::task<>(priority, "SENDTEST_TASK"), sendIRController(sendIRController), speakerController(speakerController)
     {
     }
 
@@ -27,6 +31,8 @@ public:
             sendIRController.sendMessage(message2);
             sendIRController.sendMessage(message3);
             sendIRController.sendMessage(message4);
+
+            speakerController.addSound(HITSOUND);
 
             hwlib::wait_ms(2000);
         }

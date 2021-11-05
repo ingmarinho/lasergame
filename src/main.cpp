@@ -7,6 +7,7 @@
 
 #include "MessageDecoder.h"
 #include "SendIRController.h"
+#include "SpeakerController.h"
 
 
 
@@ -26,6 +27,11 @@ int main()
    // auto sw = hwlib::target::pin_in(hwlib::target::pins::d43);
    SendIRController sendIRcontroller(IR, red);
 
+   auto speaker = hwlib::target::pin_out(hwlib::target::pins::d12);
+   SpeakerController speakerController(speaker, 6);
+
+   
+
 
 
    // debug stats
@@ -34,7 +40,7 @@ int main()
    // DebugStats debugStats(dumpButton, clearButton, 0);
    DebugStats debugStats(dumpButton, 5);
    // testing
-   SendTest sendTest(sendIRcontroller, 4);
+   SendTest sendTest(sendIRcontroller, speakerController, 4);
 
 
 
