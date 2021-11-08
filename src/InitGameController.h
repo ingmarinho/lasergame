@@ -32,28 +32,66 @@ public:
 
     void checksum(uint16_t &check)
     {
-        uint16_t f = 0;
-        uint16_t l = 5;
-        uint16_t c = 10;
+        uint16_t bit1 = 0;
+        uint16_t bit2 = 5;
+        uint16_t bit3 = 10;
+        
         for (int i = 0; i < 5; i++)
         {
             uint16_t mf = 0x1;
-            mf = mf << f;
+            mf = mf << bit1;
             uint16_t ml = 0x1;
-            ml = ml << l;
+            ml = ml << bit2;
             uint16_t mc = 0x1;
-            mc = mc << c;
+            mc = mc << bit3;
 
             uint16_t res = check & mf;
             uint16_t res2 = check & ml;
             uint16_t res3 = res ^ res2;
             check = check | res3;
 
-            f++;
-            l++;
-            c++;
+            bit1++;
+            bit2++;
+            bit3++;
         }
     }
+
+    // void checksum(uint16_t &message)
+    // {
+    //     uint16_t Bit1 = 0;
+    //     uint16_t Bit2 = 5;
+    //     uint16_t Bit3 = 10;
+        
+    //     uint16_t Mask1;
+    //     uint16_t Mask2;
+    //     uint16_t Mask3;
+
+    //     uint16_t New1;
+    //     uint16_t New2;
+    //     uint16_t New3;
+
+
+    //     for(int i = 0; i < 5; i++)
+    //     {
+    //         Mask1 = 0x1;
+    //         Mask2 = 0x1;
+    //         Mask3 = 0x1;
+
+    //         Mask1 <<= Bit1;
+    //         Mask2 <<= Bit2;
+    //         Mask3 <<= Bit3;
+
+    //         New1 = message & Mask1;
+    //         New2 = message & Mask2;
+    //         New3 = Mask1 ^ Mask2; 
+    //         message |= New3; 
+
+    //         Bit1++;
+    //         Bit2++;
+    //         Bit3++;
+    //     }
+
+    // }
 
 private:
     int speeltijd = 0;
@@ -83,7 +121,7 @@ private:
 
             case GET_SPEELTIJD:
             {
-                hwlib::cout << 1 << hwlib::endl;
+                hwlib::cout << "heeeey" << hwlib::endl;
                 wait(KeyChannel);
 
                 char KeyID = KeyChannel.read();
@@ -106,7 +144,7 @@ private:
                         speeltijd = 0;
                     }
                 }
-                else if (KeyID == '#')
+                else if (KeyID == '#' && speeltijd >= 1 && speeltijd <= 19)
                 {
 
                     state = SEND_SPEELTIJD;
@@ -117,7 +155,7 @@ private:
 
             case SEND_SPEELTIJD:
             {
-                hwlib::cout << "120981203712093712389" << hwlib::endl;
+                hwlib::cout << "Ik ben nu hierrrrr" << hwlib::endl;
                 wait(KeyChannel);
                 sendIRController.sendMessage(speeltijd_cmd);
                 char KeyID = KeyChannel.read();
@@ -126,7 +164,7 @@ private:
                 speeltijd_cmd = speeltijd_cmd | masker;
                 checksum(speeltijd_cmd);
 
-                hwlib::cout << speeltijd_cmd << hwlib::endl;
+                hwlib::cout << "SPEELTIJD:" << speeltijd << hwlib::endl;
 
                 if (KeyID == '*')
                 {
@@ -151,6 +189,8 @@ private:
                 if (KeyID == '*')
                 {
                     sendIRController.sendMessage(start_cmd);
+                    hwlib::cout << "done"<< hwlib::endl;
+                   
                 }
                 break;
             }
