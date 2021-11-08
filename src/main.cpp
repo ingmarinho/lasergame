@@ -4,7 +4,7 @@
 #include "SendTest.h"
 #include "Logger.h"
 
-#include "ReceiveIRController.h"
+// #include "ReceiveIRController.h"
 #include "RunGameController.h"
 #include "SendIRController.h"
 #include "SpeakerController.h"
@@ -19,24 +19,24 @@ int main()
    Logger logger(dumpButton, 0);
 
    // rungamecontroller
-   RunGameController runGameController;
+  //  RunGameController runGameController;
 
 
    // receiveircontroller
-   auto tsopSignal = hwlib::target::pin_in(hwlib::target::pins::d8);
-   auto led = hwlib::target::pin_out(hwlib::target::pins::d9);
+  //  auto tsopSignal = hwlib::target::pin_in(hwlib::target::pins::d8);
+  //  auto led = hwlib::target::pin_out(hwlib::target::pins::d9);
 
-   ReceiveIRController receiveIRcontroller(runGameController, tsopSignal, led, logger, 5, 2, 1); // priority MessageDecoder, priority IRReceiver
+  //  ReceiveIRController receiveIRcontroller(runGameController, tsopSignal, led, logger, 5, 2, 1); // priority MessageDecoder, priority IRReceiver
 
-   // sendircontroller
+  //  sendircontroller
    auto IR = hwlib::target::d2_36kHz();
    auto red = hwlib::target::pin_out(hwlib::target::pins::d42);
    // auto sw = hwlib::target::pin_in(hwlib::target::pins::d43);
    SendIRController sendIRcontroller(IR, red);
 
    // speakercontroller
-   auto speaker = hwlib::target::pin_out(hwlib::target::pins::d12);
-   SpeakerController speakerController(speaker, 6);
+  //  auto speaker = hwlib::target::pin_out(hwlib::target::pins::d12);
+  //  SpeakerController speakerController(speaker, 6);
 
    auto out0 = hwlib::target::pin_oc(hwlib::target::pins::a0);
    auto out1 = hwlib::target::pin_oc(hwlib::target::pins::a1);
@@ -68,7 +68,7 @@ int main()
    // OledDisplay oledDisplay(display);
 
    // testing IR
-   SendTest sendTest(sendIRcontroller, speakerController, 4);
+  //  SendTest sendTest(sendIRcontroller, speakerController, 4);
 
    rtos::run();
 }

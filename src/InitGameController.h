@@ -17,10 +17,11 @@ private:
 
     rtos::channel<char, 1024> KeyChannel;
     Toetsenbord4x4<1> &keypad;
-    SendIRController &IRcontroller;
+    SendIRController &sendIRController;
 
 public:
-    InitGameController(Toetsenbord4x4<1> &keypad, unsigned int priority, SendIRController &IRcontroller) : rtos::task<>(priority, "INITGAME_TAAK"), KeyChannel(this, "KEY_CHANNEL"), keypad(keypad), IRcontroller(IRcontroller)
+    InitGameController(Toetsenbord4x4<1> &keypad, unsigned int priority, SendIRController &sendIRController) : 
+    rtos::task<>(priority, "INITGAME_TAAK"), KeyChannel(this, "KEY_CHANNEL"), keypad(keypad), sendIRController(sendIRController)
     {
         keypad.addListener(this);
     }
@@ -69,7 +70,7 @@ private:
             {
             case IDLE:
             {
-
+                    
                 wait(KeyChannel);
                 char KeyID = KeyChannel.read();
 
@@ -77,25 +78,27 @@ private:
                 {
                     state = GET_SPEELTIJD;
                 }
+                break;
             }
-            break;
+            
             case GET_SPEELTIJD:
             {
+                hwlib::cout << 1 << hwlib::endl;
                 wait(KeyChannel);
 
                 char KeyID = KeyChannel.read();
 
-                if (KeyID >= 1 && KeyID <= 9)
+                if (KeyID >= '1' && KeyID <= '9')
                 {
                     if (speeltijd == 0)
                     {
-                        speeltijd += KeyID;
+                        speeltijd += (int)KeyID - 48;
                     }
 
                     else if (speeltijd == 1)
                     {
 
-                        speeltijd *= 10;
+                        speeltijd = (10 + (int)KeyID - 48);
                     }
                     else
                     {
@@ -104,21 +107,22 @@ private:
                         
                     }
                 }
-                else if (KeyID == '#' && speeltijd >= 1 && speeltijd <= 19)
+                else if (KeyID == '#')
                 {
 
                     state = SEND_SPEELTIJD;
                     hwlib::cout << speeltijd << hwlib::endl;
                 }
-                
+                 break;
             }
-            break;
+           
 
             case SEND_SPEELTIJD:
             {
-                IRcontroller.sendMessage(speeltijd_cmd);
-                char KeyID = KeyChannel.read();
+                hwlib::cout << "120981203712093712389" << hwlib::endl;
                 wait(KeyChannel);
+                sendIRController.sendMessage(speeltijd_cmd);
+                char KeyID = KeyChannel.read();  
                 uint16_t masker = speeltijd;
                 masker = masker << 6;
                 speeltijd_cmd = speeltijd_cmd | masker;
@@ -130,8 +134,9 @@ private:
                 {
                     state = SEND_START_CMD;
                 }
+                break;
             }
-            break;
+            
 
             case SEND_START_CMD:
             {
@@ -145,10 +150,11 @@ private:
 
                 if (KeyID == '*')
                 {
-                    IRcontroller.sendMessage(start_cmd);
+                    sendIRController.sendMessage(start_cmd);
                 }
+                break;
             }
-            break;
+            
             default:
                 hwlib::cout << "help" << hwlib::endl;
                 break;

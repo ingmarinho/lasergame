@@ -1,1 +1,1 @@
-bmptk-make run
+bmptk-make clean run
