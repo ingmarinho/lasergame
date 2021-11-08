@@ -53,9 +53,9 @@ int main()
    auto matrix = hwlib::matrix_of_switches(out_port, in_port);
    auto keypad = hwlib::keypad<16>(matrix, "123A456B789C*0#D");
 
-   Toetsenbord4x4<2> Toetsenbord(keypad, 3);
+ Toetsenbord4x4<1> Toetsenbord(keypad, 3);
 
-   InitGameController IGC(Toetsenbord);
+   InitGameController IGC(Toetsenbord, 2, sendIRcontroller);
 
    // oleddisplay
    // auto scl = hwlib::target::pin_oc(hwlib::target::pins::scl);
