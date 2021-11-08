@@ -113,9 +113,9 @@ private:
     void hitSound()
     {
 
-        speaker.turnOn();
-        hwlib::wait_ms(500);
-        speaker.turnOff();
+        // speaker.turnOn();
+        // hwlib::wait_ms(500);
+        // speaker.turnOff();
         // playNote(note{note::E5, note::dQ});
         // playNote(note{note::D5s, note::dQ});
         // playNote(note{note::E5, note::dQ});

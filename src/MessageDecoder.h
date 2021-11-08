@@ -33,7 +33,31 @@ public:
     }
 
 private:
-    bool check(const uint16_t &message)
+    bool createMessage(uint16_t &message, int &pause)
+    {
+        // pause = pausesChannel.read();
+
+        for (unsigned int i = 0; i < 16; i++)
+        {
+            pause = pausesChannel.read();
+
+            if (pause > 200 && pause < 2000)
+            {
+                message |= (((pause > 1000) ? 0 : 1) << i);
+                // pause = pausesChannel.read();
+                // logger.logInt(pause);
+            }
+
+            else if (pause > 3500 && pause < 5000)
+            {
+                hwlib::cout << "error\n";
+                return false;
+            }
+        }
+        return true;
+    }
+
+    bool isValidCheckSum(const uint16_t &message)
     {
         unsigned int checkBitOne = 1;
         unsigned int checkBitTwo = 6;
@@ -56,7 +80,9 @@ private:
     void main()
     {
         int pause;
-        uint16_t message = 0x0;
+        uint16_t firstMessage;
+        uint16_t secondMessage;
+        bool messageResult;
 
         for (;;)
         {
@@ -67,49 +93,94 @@ private:
                 wait(pausesChannel);
 
                 pause = pausesChannel.read();
-                // logger.addLog(pause);
 
                 if (pause > 3500 && pause < 5000)
                 {
                     state = MESSAGE;
-                    
                 }
 
                 break;
 
             case MESSAGE:
-                message = 0x0;
-                pause = pausesChannel.read();
+                firstMessage = 0x0;
+                secondMessage = 0x0;
 
-                // hwlib::cout << pause << hwlib::endl;
+                messageResult = createMessage(firstMessage, pause);
+                // logger.logInt(firstMessage);
 
-                for (unsigned int i = 0; i < 16; i++)
+                // check first message
+                if (!messageResult)
                 {
-                    // message >>= 1; 
-
-                    if (pause > 200 && pause < 2000)
-                    {
-                        message |= (((pause > 1000) ? 0 : 1) << i);
-                        pause = pausesChannel.read();
-                        // logger.addLog(i);
-                        // hwlib::cout << pause << hwlib::endl;
-                    }
-
-                    else if (pause > 3500 && pause < 5000)
-                    {
-                        hwlib::cout << "error\n";
-                        state = IDLE;
-                        break;
-                    }
+                    state = IDLE;
+                    break;
                 }
 
-                // logger.addLog(message == 0xFF0F ? "Correct" : "Incorrect");
-                logger.addLog(message);
-                // logger.addLog(message);
+                // check checksum
+                // if (!isValidCheckSum(firstMessage))
+                // {
+                //     state = IDLE;
+                //     break;
+                // }
+
+                // check pausebit
+                pause = pausesChannel.read();
+                if (!(pause > 2500 && pause < 3500))
+                {
+                    // hwlib::cout << "error1\n";
+                    state = IDLE;
+                    break;
+                }
+
+                // check second message
+                messageResult = createMessage(secondMessage, pause);
+                if (!messageResult)
+                {
+                    // hwlib::cout << "error2\n";
+                    state = IDLE;
+                    break;
+                }
+
+                if (firstMessage == secondMessage)
+                {
+                    logger.logInt(firstMessage);
+                }
 
                 state = IDLE;
 
                 break;
+
+                // pause = pausesChannel.read();
+
+                // for (unsigned int i = 0; i < 16; i++)
+                // {
+                //     // message >>= 1;
+
+                //     if (pause > 200 && pause < 2000)
+                //     {
+                //         message |= (((pause > 1000) ? 0 : 1) << i);
+                //         pause = pausesChannel.read();
+                //     }
+
+                //     else if (pause > 3500 && pause < 5000)
+                //     {
+                //         hwlib::cout << "error\n";
+                //         state = IDLE;
+                //         break;
+                //     }
+                // }
+
+                // check pausebit
+                // pause = pausesChannel.read();
+                // if (!pause > 2500 && pause < 3500)
+                // {
+                //     hwlib::cout << "error\n";
+                //     state = IDLE;
+                //     break;
+                // }
+
+                // logger.addLog(message == 0xFF0F ? "Correct" : "Incorrect");
+                // logger.logInt(message);
+                // logger.addLog(message);
             }
         }
     }
