@@ -10,12 +10,12 @@ class ReceiveIRController : public rtos::task<>
 private:
     rtos::channel<uint16_t, 1024> messageChannel;
 
-    RunGameController &runGameController;
     MessageDecoder messageDecoder;
+    RunGameController &runGameController;
 
 public:
-    ReceiveIRController(RunGameController& runGameController, hwlib::target::pin_in &tsopSignal, hwlib::target::pin_out &led, ReceiveIRController &receiveIRController, Logger &logger, unsigned int ReceiveIRControllerPriority, unsigned int MessageDecoderPriority, unsigned int IRReceiverPriority)
-        : rtos::task<>(ReceiveIRControllerPriority, "RECEIVEIRCONTROLLER_TASK"), messageChannel(this, "MESSAGE_CHANNEL"), runGameController(runGameController), messageDecoder(this, tsopSignal, led, logger, MessageDecoderPriority, IRReceiverPriority)
+    ReceiveIRController(RunGameController& runGameController, hwlib::target::pin_in &tsopSignal, hwlib::target::pin_out &led, Logger &logger, unsigned int ReceiveIRControllerPriority, unsigned int MessageDecoderPriority, unsigned int IRReceiverPriority)
+        : rtos::task<>(ReceiveIRControllerPriority, "RECEIVEIRCONTROLLER_TASK"), messageChannel(this, "MESSAGE_CHANNEL"), messageDecoder(this, tsopSignal, led, logger, MessageDecoderPriority, IRReceiverPriority), runGameController(runGameController)
     {
     }
 

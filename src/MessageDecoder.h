@@ -1,7 +1,7 @@
 #pragma once
 
 #include "IRReceiver.h"
-// #include "ReceiveIRController.h"
+#include "ReceiveIRController.h"
 #include "Logger.h"
 
 class ReceiveIRController;
@@ -24,7 +24,7 @@ private:
     Logger &logger;
 
 public:
-    MessageDecoder(ReceiveIRController * receiveIRController, hwlib::target::pin_in &tsopSignal, hwlib::target::pin_out &led, Logger &logger, unsigned int MessageDecoderPriority, unsigned int IRReceiverPriority)
+    MessageDecoder(ReceiveIRController *receiveIRController, hwlib::target::pin_in &tsopSignal, hwlib::target::pin_out &led, Logger &logger, unsigned int MessageDecoderPriority, unsigned int IRReceiverPriority)
         : rtos::task<>(MessageDecoderPriority, "MESSAGEDECODER_TASK"), pausesChannel(this, "PAUSE_CHANNEL"), receiveIRController(receiveIRController), irReceiver(tsopSignal, led, IRReceiverPriority), logger(logger)
     {
         irReceiver.addListener(this);
@@ -143,7 +143,7 @@ private:
 
                 if (firstMessage == secondMessage)
                 {
-                    receiveIRController.sendMessage(firstMessage);
+                    receiveIRController->sendMessage(firstMessage);
                 }
 
                 state = IDLE;
