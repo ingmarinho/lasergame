@@ -1,7 +1,10 @@
 #pragma once
 
 #include "IRReceiver.h"
+// #include "ReceiveIRController.h"
 #include "Logger.h"
+
+class ReceiveIRController;
 
 class MessageDecoder : public rtos::task<>, public IRReceiverListener
 {
@@ -16,13 +19,13 @@ private:
     state_t state = IDLE;
 
     rtos::channel<int, 1024> pausesChannel;
-    // receiveIRController &receiveIRctrl;
+    ReceiveIRController *receiveIRController;
     IRReceiver<1> irReceiver;
     Logger &logger;
 
 public:
-    MessageDecoder(hwlib::target::pin_in &tsopSignal, hwlib::target::pin_out &led, Logger &logger, unsigned int MessageDecoderPriority, unsigned int IRReceiverPriority)
-        : rtos::task<>(MessageDecoderPriority, "MESSAGEDECODER_TASK"), pausesChannel(this, "PAUSE_CHANNEL"), irReceiver(tsopSignal, led, IRReceiverPriority), logger(logger)
+    MessageDecoder(ReceiveIRController * receiveIRController, hwlib::target::pin_in &tsopSignal, hwlib::target::pin_out &led, Logger &logger, unsigned int MessageDecoderPriority, unsigned int IRReceiverPriority)
+        : rtos::task<>(MessageDecoderPriority, "MESSAGEDECODER_TASK"), pausesChannel(this, "PAUSE_CHANNEL"), receiveIRController(receiveIRController), irReceiver(tsopSignal, led, IRReceiverPriority), logger(logger)
     {
         irReceiver.addListener(this);
     }
@@ -35,7 +38,6 @@ public:
 private:
     bool createMessage(uint16_t &message, int &pause)
     {
-        // pause = pausesChannel.read();
 
         for (unsigned int i = 0; i < 16; i++)
         {
@@ -44,8 +46,7 @@ private:
             if (pause > 200 && pause < 2000)
             {
                 message |= (((pause > 1000) ? 0 : 1) << i);
-                // pause = pausesChannel.read();
-                // logger.logInt(pause);
+
             }
 
             else if (pause > 3500 && pause < 5000)
@@ -116,11 +117,11 @@ private:
                 }
 
                 // check checksum
-                // if (!isValidCheckSum(firstMessage))
-                // {
-                //     state = IDLE;
-                //     break;
-                // }
+                if (!isValidCheckSum(firstMessage))
+                {
+                    state = IDLE;
+                    break;
+                }
 
                 // check pausebit
                 pause = pausesChannel.read();
@@ -142,7 +143,7 @@ private:
 
                 if (firstMessage == secondMessage)
                 {
-                    logger.logInt(firstMessage);
+                    receiveIRController.sendMessage(firstMessage);
                 }
 
                 state = IDLE;

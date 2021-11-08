@@ -22,7 +22,7 @@ public:
 
     void setPlayerID(const int &PID)
     {
-        playerID = PID
+        playerID = PID;
 
     }
 
@@ -44,7 +44,7 @@ private:
                 << "\f"
                 << "Player: " << playerID << "\n" 
                 << "HP: " << hitPoints << "\n"
-                << "Weapon " << weaponID << "\n"
+                << "Weapon " << selectedGun << "\n"
                 << hwlib::flush;
             hwlib::wait_ms(1'000);
             display << "\f" << hwlib::flush;

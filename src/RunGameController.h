@@ -15,6 +15,7 @@ class RunGameController : public rtos::task<>
         ZOMBIE
 	};
 private:
+    state_t state = IDLE;
 
 
 public:
@@ -30,6 +31,9 @@ private:
             {
             case IDLE:
 
+                break;
+
+            case REGISTER_GAME_PARAMETERS:
                 break;
 
             case HIT_RECEIVED:
