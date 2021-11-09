@@ -2,14 +2,26 @@
 
 class button : public rtos::task<> 
 { 
+private:
     hwlib::target::pin_in Trigger;
 
-    InitShotController(hwlib::target::pin_in buttontrigger, unsigned int priority) : 
-    rtos::task<>(1, "TRIGGER_TAAK"), Trigger(buttontrigger)
+public: 
+    button(hwlib::target::pin_in &button, unsigned int priority) : 
+    rtos::task<>(priority, "BUTTON_TAAK"), Trigger(button)
 
-}
+    void addListener(ButtonListener *listener)
+	{
+		if (currentNumberOfListeners < maxNumberOfListeners)
+		{
+			ButtonListeners[currentNumberOfListeners] = listener;
+			currentNumberOfListeners++;
+		}
+	}
 
-class ButtonListener {
+};
+
+class ButtonListener
+{
 public:
 	virtual void ButtonPressed ();
 };
@@ -18,6 +30,16 @@ template <unsigned int maxNumberOfListeners>
 class InitShotController  : public rtos::task<>{
 
 private:
+
+    enum state_t
+    {
+        IDLE,
+        STARTGAME,
+        SENDIR,
+        ZOMBIE,
+        GAMEOVER
+
+    };
 	
 	std::array< ButtonListener*, maxNumberOfListeners> ButtonListeners;
 	unsigned int currentNumberOfListeners = 0;
@@ -43,14 +65,7 @@ public:
 		}
 	}
 
-	void addListener(ButtonListener *listener)
-	{
-		if (currentNumberOfListeners < maxNumberOfListeners)
-		{
-			ButtonListeners[currentNumberOfListeners] = listener;
-			currentNumberOfListeners++;
-		}
-	}
+	
 	
 private:
 	void main(){
@@ -76,15 +91,7 @@ private:
 
 class InitShotController : public rtos::task<>
 {
-    enum state_t
-    {
-        IDLE,
-        STARTGAME,
-        SENDIR,
-        ZOMBIE,
-        GAMEOVER
 
-    };
 
 private:
 
