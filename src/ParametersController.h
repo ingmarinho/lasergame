@@ -1,4 +1,5 @@
 #pragma once
+ 
 
 class ParametersController : public rtos::task<>
 {
@@ -14,16 +15,21 @@ class ParametersController : public rtos::task<>
 private:
     state_t state = IDLE;
 
-    rtos::channel<int, 1024> KeyChannel;
-    hwlib::keypad::keypad;
-
+    rtos::channel<char, 1024> KeyChannel;
+    Toetsenbord4x4<1> &keypad;
+    RunGameController &RunGameController; 
 public:
-    ParametersController(hwlib::keypad<16> &keypad)
-	{
-	}
-    
+    ParametersController(Toetsenbord4x4<1> &keypad, unsigned int priority) : rtos::task<>(priority, "PARAMETERS_TAAK"), KeyChannel(this, "KEY_CHANNEL"), keypad(keypad), RunGameController(RunGameController)
+    {
+        keypad.addListener(this);
+    }
 
 private:
+    int PlayerID;
+    int WeaponID;
+    bool PlayerNumber = false;
+    bool WeaponNumber = false;
+
     void main()
     {
         for (;;)
@@ -31,18 +37,47 @@ private:
             switch (state)
             {
             case IDLE:
+                wait(KeyChannel);
 
+                char KeyID = KeyChannel.read();
+
+                if (KeyID == 'A')
+                {
+                    state = GET_PLAYER_NUMBER;
+                }
+                else if (KeyID == 'B')
+                {
+
+                    state = GET_FIRE_POWER;
+                }
+                else if (KeyID == '*' && PlayerNumber && WeaponNumber)
+                {
+                    state = GAME_IS_RUNNING; 
+                }
                 break;
 
             case GET_FIRE_POWER:
+
+                if (KeyID >= '0' && KeyID <= '9')
+                {
+                    WeaponID = (int)KeyID - 48;
+                    WeaponNumber = true;
+                }
 
                 break;
 
             case GET_PLAYER_NUMBER:
 
+                if (KeyID >= '0' && KeyID <= '9')
+                {
+                    PlayerID = (int)KeyID - 48;
+                    PlayerNumber = true;
+                }
+                
                 break;
 
             case GAME_IS_RUNNING:
+
 
                 break;
             }

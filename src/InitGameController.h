@@ -131,7 +131,7 @@ private:
 
                 char KeyID = KeyChannel.read();
 
-                if (KeyID >= '1' && KeyID <= '9')
+                if (KeyID >= '0' && KeyID <= '9')
                 {
                     if (speeltijd == 0)
                     {
