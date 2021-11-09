@@ -4,7 +4,7 @@
 #include "SendTest.h"
 #include "Logger.h"
 
-// #include "ReceiveIRController.h"
+#include "ReceiveIRController.h"
 #include "RunGameController.h"
 #include "SendIRController.h"
 #include "SpeakerController.h"
@@ -18,15 +18,15 @@ int main()
    auto dumpButton = hwlib::target::pin_in(hwlib::target::pins::d11);
    Logger logger(dumpButton, 0);
 
-   // rungamecontroller
-  //  RunGameController runGameController;
+  //  rungamecontroller
+   RunGameController runGameController;
 
 
    // receiveircontroller
-  //  auto tsopSignal = hwlib::target::pin_in(hwlib::target::pins::d8);
-  //  auto led = hwlib::target::pin_out(hwlib::target::pins::d9);
+   auto tsopSignal = hwlib::target::pin_in(hwlib::target::pins::d8);
+   auto led = hwlib::target::pin_out(hwlib::target::pins::d9);
 
-  //  ReceiveIRController receiveIRcontroller(runGameController, tsopSignal, led, logger, 5, 2, 1); // priority MessageDecoder, priority IRReceiver
+   ReceiveIRController receiveIRcontroller(runGameController, tsopSignal, led, logger, 5, 2, 1); // priority MessageDecoder, priority IRReceiver
 
   //  sendircontroller
    auto IR = hwlib::target::d2_36kHz();
