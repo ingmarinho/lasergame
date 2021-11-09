@@ -1,81 +1,65 @@
 #pragma once
 
-class button : public rtos::task<> 
-{ 
-    hwlib::target::pin_in Trigger;
-
-    InitShotController(hwlib::target::pin_in buttontrigger, unsigned int priority) : 
-    rtos::task<>(1, "TRIGGER_TAAK"), Trigger(buttontrigger)
-
-}
-
-class ButtonListener {
+class ButtonListener
+{
 public:
-	virtual void ButtonPressed ();
+    virtual void ButtonPressed(int buttonid);
 };
 
 template <unsigned int maxNumberOfListeners>
-class InitShotController  : public rtos::task<>{
+class button : public rtos::task<>
+{
 
 private:
-	
-	std::array< ButtonListener*, maxNumberOfListeners> ButtonListeners;
-	unsigned int currentNumberOfListeners = 0;
-	state_t state = STARTGAME;
-
-    rtos::channel<char, 1024> ButtonChannel;
-    rtos::timer Timer;
-    rtos::flag ZombieFlag;
-    rtos::flag StartGame;
-    rtos::flag GameOver;
-    uint16_t Commando;
-    int Delay;
-    button Trigger; 
+    std::array<ButtonListener *, maxNumberOfListeners> ButtonListeners;
+    hwlib::target::pin_in Trigger;
+    unsigned int currentNumberOfListeners = 0;
 
 public:
-	InitShotController(hwlib::target::pin_in buttontrigger, unsigned int priority) : 
-    rtos::task<>(1, "TRIGGER_TAAK"), Trigger(buttontrigger)
-	{
-		unsigned int i=0;
-		for(i=0;i<maxNumberOfListeners;i++)
-		{
-			ButtonListeners[i]=nullptr;
-		}
-	}
+    button(hwlib::target::pin_in &button, unsigned int priority) : rtos::task<>(priority, "BUTTON_TAAK"), Trigger(button)
+    {
+        for (unsigned int i = 0; i < maxNumberOfListeners; i++)
+        {
+            ButtonListeners[i] = nullptr;
+        }
+    }
 
-	void addListener(ButtonListener *listener)
-	{
-		if (currentNumberOfListeners < maxNumberOfListeners)
-		{
-			ButtonListeners[currentNumberOfListeners] = listener;
-			currentNumberOfListeners++;
-		}
-	}
-	
-private:
-	void main(){
-		for(;;){
-			char c = button.getc();
-			hwlib::cout << c << hwlib::endl;
-			
-			unsigned int i=0;
-			for(i=0;i < maxNumberOfListeners;i++)
-			{
-				auto listener = ButtonListeners[i];
-				if(listener!=nullptr)
-				{
-				   listener->ButtonPressed(c);	
-				}
-			}
-		}
-	}
+    void addListener(ButtonListener *listener)
+    {
+        if (currentNumberOfListeners < maxNumberOfListeners)
+        {
+            ButtonListeners[currentNumberOfListeners] = listener;
+            currentNumberOfListeners++;
+        }
+    }
+
+    void main()
+    {
+        for (;;)
+        {
+            bool t = false;
+
+            while (!t)
+            {
+                t = Trigger.read();
+            }
+
+            for (unsigned int i = 0; i < maxNumberOfListeners; i++)
+            {
+                auto listener = ButtonListeners[i];
+                if (listener != nullptr)
+                {
+                    listener->ButtonPressed(0);
+                }
+            }
+        }
+    }
 };
 
-
-
-
-class InitShotController : public rtos::task<>
+class InitShotController : public rtos::task<>, public ButtonListener
 {
+
+private:
     enum state_t
     {
         IDLE,
@@ -86,41 +70,46 @@ class InitShotController : public rtos::task<>
 
     };
 
-private:
+    state_t state = STARTGAME;
+    rtos::channel<char, 1024> ButtonChannel;
+    rtos::timer Timer;
+    rtos::flag ZombieFlag;
+    rtos::flag StartGame;
+    rtos::flag GameOver;
+    uint16_t Commando;
+    int Delay;
+    button<1> Trigger;
 
 public:
-    InitGameController(Button &Button, unsigned int priority) :
-     rtos::task<>(priority, "BUTTON_TAAK"), ButtonChannel(this, "BUTTON_CHANNEL"), button(button),  
+    InitShotController(hwlib::target::pin_in buttontrigger, unsigned int priority, unsigned int priority1) : rtos::task<>(priority, "TRIGGER_TAAK"),
+                                                                                                             Trigger(buttontrigger, priority1), ButtonChannel(this, "BUTTON_CHANNEL"), ZombieFlag(this, "ZombieFlag") StartGame(this, "StartGame"), GameOver(this, "GameOver"), Timer(this, "Timer")
     {
         button.addListener(this);
     }
 
-
-    void ButtonPressed(bool ButtonID)
+    void ButtonPressed(int ButtonID)
     {
         ButtonChannel.write(ButtonID);
     }
 
-    void StartGame(uint16_t Command, int Delay)
-    {   
-        Command = 
-        Delay = Delay;
+    void StartGame(uint16_t C, int D)
+    {
+        Commando = C;
+        Delay = D;
 
-        
         StartGame.set();
     }
 
     void GameOver()
     {
         GameOver.set();
-    }   
+    }
 
     void ZombieFlag()
     {
-       ZombieFlag.set() 
+        ZombieFlag.set()
     }
 
-    
 private:
     void main()
     {
@@ -129,35 +118,53 @@ private:
             switch (state)
             {
             case STARTGAME:
-            wait(StartGame);
-            state = IDLE;
+                wait(StartGame);
+                state = IDLE;
                 break;
 
             case IDLE:
-            auto event = wait(GameOver + ZombieFlag + ButtonChannel)
-
-            if(event = ZombieFlag)
             {
-                state = ZOMBIE;
-            }
+                auto event = wait(GameOver + ZombieFlag + ButtonChannel)
 
+                if (event = ZombieFlag)
+                {
+                    state = ZOMBIE;
+                }
+                else if (event = GameOver)
+                {
+                    state = GAMEOVER;
+                }
+                else if (event = ButtonChannel)
+                {
+                    state = SENDIR;
+                }
+            }
                 break;
 
             case ZOMBIE:
 
             {
-                hwlib::wait_ms(5000);
+                timer.set(delay);
+                wait(delay);  
+
+                state = IDLE; 
             }
-                
+
                 break;
 
             case SENDIR:
+            {    
+                sendIRcontroller.sendMessage(Commando);
+                state = IDLE;
+            }
             
-            sendIRcontroller.sendMessage()
-                
                 break;
 
             case GAMEOVER:
+            
+            break;
+
+           
             }
         }
     }

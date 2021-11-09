@@ -41,3 +41,7 @@ src/main.bin
 src/main.elf
 src/main.ld
 src/main.map
+.idea/Lasergame.iml
+.idea/modules.xml
+.idea/vcs.xml
+.idea/workspace.xml
