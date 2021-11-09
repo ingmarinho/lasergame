@@ -1,5 +1,20 @@
 #pragma once
 
+#include <array>
+
+template <unsigned int maxNumberOfWeapons>
+class damagelist {
+private:
+	std::array<int, maxNumberOfWeapons> firepowers;
+public:
+	damagelist(){
+		int damage = 10;
+		for(unsigned int i = 0 ; i < maxNumberOfWeapons ; i++){
+		
+		}
+	}
+};
+
 class RunGameController : public rtos::task<>
 {
     enum state_t
@@ -16,6 +31,7 @@ class RunGameController : public rtos::task<>
 	};
 private:
     state_t state = IDLE;
+    ParametersController &parameterscontroller
 
 
 public:
@@ -30,7 +46,7 @@ private:
             switch (state)
             {
             case IDLE:
-
+				
                 break;
 
             case REGISTER_GAME_PARAMETERS:
