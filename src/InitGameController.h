@@ -35,7 +35,7 @@ public:
     //     uint16_t bit1 = 0;
     //     uint16_t bit2 = 5;
     //     uint16_t bit3 = 10;
-        
+
     //     for (int i = 0; i < 5; i++)
     //     {
     //         uint16_t mf = 0x1;
@@ -58,10 +58,10 @@ public:
 
     void checksum(uint16_t &message)
     {
-        uint16_t Bit1 = 0;
-        uint16_t Bit2 = 5;
-        uint16_t Bit3 = 10;
-        
+        int Bit1 = 1;
+        int Bit2 = 6;
+        int Bit3 = 11;
+
         uint16_t Mask1;
         uint16_t Mask2;
         uint16_t Mask3;
@@ -70,8 +70,7 @@ public:
         uint16_t New2;
         uint16_t New3;
 
-
-        for(int i = 0; i < 5; i++)
+        for (int i = 0; i < 5; i++)
         {
             Mask1 = 0x1;
             Mask2 = 0x1;
@@ -82,26 +81,29 @@ public:
             Mask3 <<= Bit3;
 
             New1 = message & Mask1;
-            hwlib::cout << "NEW1:" <<New1 << hwlib::endl;
+
+            // hwlib::cout << "NEW1:" << New1 << hwlib::endl;
             New2 = message & Mask2;
-            hwlib::cout << "NEW2:" <<New2 << hwlib::endl;
-            New3 = New1 ^ New2;
-            hwlib::cout << "XOR:" <<New3 << hwlib::endl;
-            message |= New3; 
-            hwlib::cout <<"OR:"<< message << hwlib::endl;
+            // hwlib::cout << "NEW2:" << New2 << hwlib::endl;
+            New3 = (New1 << 10) ^ (New2 << 5);
+            // hwlib::cout << "XOR:" << New3 << hwlib::endl;
+            message |= New3;
+            // hwlib::cout << "OR:" << message << hwlib::endl;
+
             Bit1++;
             Bit2++;
             Bit3++;
         }
-
+            hwlib::cout<< message << hwlib::endl; 
     }
 
 private:
     int speeltijd = 0;
     int countdown = 20;
-    uint16_t speeltijd_cmd = 0x14;
-    uint16_t start_cmd = 0x16;
+    uint16_t speeltijd_cmd = 0xA << 1;
+    uint16_t start_cmd = 0xB << 1;
     uint16_t masked_start_cmd;
+
     void main()
     {
 
@@ -159,26 +161,33 @@ private:
             case SEND_SPEELTIJD:
             {
                 hwlib::cout << "Ik ben nu hierrrrr" << hwlib::endl;
-                wait(KeyChannel);
-                sendIRController.sendMessage(speeltijd_cmd);
-                char KeyID = KeyChannel.read();
+                char KeyID = 'B';
                 uint16_t masker = speeltijd;
                 masker = masker << 6;
                 speeltijd_cmd = speeltijd_cmd | masker;
                 checksum(speeltijd_cmd);
 
                 hwlib::cout << "SPEELTIJD:" << speeltijd << hwlib::endl;
-
-                if (KeyID == '*')
+                while (KeyID != '#')
                 {
-                    state = SEND_START_CMD;
+                    wait(KeyChannel);
+                    KeyID = KeyChannel.read();
+
+                    if (KeyID == '*')
+                    {
+                        hwlib::cout << speeltijd_cmd << hwlib::endl;
+
+                        sendIRController.sendMessage(speeltijd_cmd);
+                    }
                 }
+                state = SEND_START_CMD;
+
                 break;
             }
 
             case SEND_START_CMD:
             {
-
+                char KeyID = 'B';
                 uint16_t masker2 = countdown;
                 masker2 = masker2 << 6;
                 masked_start_cmd = start_cmd | masker2;
@@ -186,14 +195,19 @@ private:
 
                 hwlib::cout << masked_start_cmd << hwlib::endl;
 
+                
+                
 
-                wait(KeyChannel);
-                char KeyID = KeyChannel.read();
-                if (KeyID == '*')
+                while (KeyID != '#')
                 {
-                    sendIRController.sendMessage(start_cmd);
-                    hwlib::cout << "done"<< hwlib::endl;
-                   
+                    wait(KeyChannel);
+                    KeyID = KeyChannel.read();
+                    if (KeyID == '*')
+                    {
+                        hwlib::cout << masked_start_cmd << hwlib::endl;
+                        sendIRController.sendMessage(masked_start_cmd);
+                        hwlib::cout << "done" << hwlib::endl;
+                    }
                 }
                 break;
             }
