@@ -4,14 +4,14 @@ class OledDisplay : public rtos::task<>
 {
 private:
     hwlib::terminal_from &display;
-    const char *selectedGun;
-    unsigned int playerID;
+    const char *selectedGun = "ak-47";
+    unsigned int playerID = 1;
     // unsigned int timer;
-    unsigned int hitPoints;
+    unsigned int hitPoints = 100;
 
 public:
-    OledDisplay(hwlib::terminal_from &display)
-        : display(display)
+    OledDisplay(hwlib::terminal_from &display, unsigned int priority)
+        : rtos::task<>(priority, "OLEDDISPLAY_TASK"), display(display)
     {
     }
 
@@ -44,7 +44,7 @@ private:
                 << "\f"
                 << "Player: " << playerID << "\n" 
                 << "HP: " << hitPoints << "\n"
-                << "Weapon " << selectedGun << "\n"
+                << "Weapon: " << selectedGun << "\n"
                 << hwlib::flush;
             hwlib::wait_ms(1'000);
             display << "\f" << hwlib::flush;

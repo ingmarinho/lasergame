@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include "rtos.hpp"
 
 class IRReceiverListener
 {

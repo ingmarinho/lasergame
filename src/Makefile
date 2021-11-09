@@ -9,10 +9,10 @@
 #############################################################################
 
 # source files in this project (main.cpp is automatically assumed)
-SOURCES :=
+SOURCES := MessageDecoder.cpp ReceiveIRController.cpp
 
 # header files in this project
-HEADERS := DebugStats.h IRReceiver.h SendIRController.h MessageDecoder.h initGameController.h
+HEADERS := DebugStats.h IRReceiver.h SendIRController.h MessageDecoder.h ReceiveIRController.h initGameController.h
 
 # other places to look for files for this project
 SEARCH  := 
