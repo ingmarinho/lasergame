@@ -82,15 +82,9 @@ private:
 
 public:
     InitShotController(hwlib::target::pin_in buttontrigger, unsigned int priority, unsigned int priority1) : rtos::task<>(priority, "TRIGGER_TAAK"),
-                       Trigger(buttontrigger, priority1), ButtonChannel(this, "BUTTON_CHANNEL"), StartGame(this, "StartGame"), GameOver()
+                                                                                                             Trigger(buttontrigger, priority1), ButtonChannel(this, "BUTTON_CHANNEL"), ZombieFlag(this, "ZombieFlag") StartGame(this, "StartGame"), GameOver(this, "GameOver"), Timer(this, "Timer")
     {
         button.addListener(this);
-    }
-    
-
-    InitGameController(Button &Button, unsigned int priority) : rtos::task<>(priority, "BUTTON_TAAK"), , button(button),
-    {
-    
     }
 
     void ButtonPressed(int ButtonID)
@@ -98,10 +92,10 @@ public:
         ButtonChannel.write(ButtonID);
     }
 
-    void StartGame(uint16_t Command, int Delay)
+    void StartGame(uint16_t C, int D)
     {
-        Command =
-            Delay = Delay;
+        Commando = C;
+        Delay = D;
 
         StartGame.set();
     }
@@ -129,30 +123,48 @@ private:
                 break;
 
             case IDLE:
+            {
                 auto event = wait(GameOver + ZombieFlag + ButtonChannel)
 
-                    if (event = ZombieFlag)
+                if (event = ZombieFlag)
                 {
                     state = ZOMBIE;
                 }
-
+                else if (event = GameOver)
+                {
+                    state = GAMEOVER;
+                }
+                else if (event = ButtonChannel)
+                {
+                    state = SENDIR;
+                }
+            }
                 break;
 
             case ZOMBIE:
 
             {
-                hwlib::wait_ms(5000);
+                timer.set(delay);
+                wait(delay);  
+
+                state = IDLE; 
             }
 
-            break;
+                break;
 
             case SENDIR:
-
-                sendIRcontroller.sendMessage()
-
-                    break;
+            {    
+                sendIRcontroller.sendMessage(Commando);
+                state = IDLE;
+            }
+            
+                break;
 
             case GAMEOVER:
+            
+            break;
+
+           
             }
         }
     }
