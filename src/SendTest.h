@@ -2,6 +2,7 @@
 
 #include "SendIRController.h"
 #include "SpeakerController.h"
+#include "OledDisplay.h"
 
 class SendTest : public rtos::task<>
 {
@@ -11,9 +12,12 @@ private:
     // testing sound
     SpeakerController &speakerController;
 
+    // testing display
+    OledDisplay &oledDisplay;
+
 public:
-    SendTest(SendIRController &sendIRController, SpeakerController& speakerController, unsigned int priority)
-        : rtos::task<>(priority, "SENDTEST_TASK"), sendIRController(sendIRController), speakerController(speakerController)
+    SendTest(SendIRController &sendIRController, SpeakerController& speakerController, OledDisplay& oledDisplay, unsigned int priority)
+        : rtos::task<>(priority, "SENDTEST_TASK"), sendIRController(sendIRController), speakerController(speakerController), oledDisplay(oledDisplay)
     {
     }
 
@@ -33,6 +37,11 @@ public:
             sendIRController.sendMessage(message4);
 
             speakerController.addSound(HITSOUND);
+
+            oledDisplay.showDisplayScreen(GAME_START);
+            hwlib::wait_ms(2000);
+            oledDisplay.showDisplayScreen(PLAYER_ALIVE);
+
 
             hwlib::wait_ms(2000);
         }

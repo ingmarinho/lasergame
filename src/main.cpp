@@ -21,14 +21,14 @@ int main()
   Logger logger(dumpButton, 0);
 
   //  rungamecontroller
-  RunGameController runGameController;
+  // RunGameController runGameController;
 
-  ReceiveIRController receiveIRcontroller(runGameController, 1); // priority MessageDecoder, priority IRReceiver
+  // ReceiveIRController receiveIRcontroller(runGameController, 1); // priority MessageDecoder, priority IRReceiver
 
   // messagedecoder
-  auto tsopSignal = hwlib::target::pin_in(hwlib::target::pins::d8);
-  auto led = hwlib::target::pin_out(hwlib::target::pins::d9);
-  MessageDecoder messageDecoder(tsopSignal, led, receiveIRcontroller, logger, 5, 9);
+  // auto tsopSignal = hwlib::target::pin_in(hwlib::target::pins::d8);
+  // auto led = hwlib::target::pin_out(hwlib::target::pins::d9);
+  // MessageDecoder messageDecoder(tsopSignal, led, receiveIRcontroller, logger, 5, 9);
 
   //  sendircontroller
   auto IR = hwlib::target::d2_36kHz();
@@ -59,7 +59,7 @@ int main()
 
   InitGameController IGC(Toetsenbord, 2, sendIRcontroller);
 
-  // oleddisplay
+  // // oleddisplay
   auto scl = hwlib::target::pin_oc(hwlib::target::pins::scl);
   auto sda = hwlib::target::pin_oc(hwlib::target::pins::sda);
   auto i2cBus = hwlib::i2c_bus_bit_banged_scl_sda(scl, sda);
@@ -67,10 +67,10 @@ int main()
   auto font = hwlib::font_default_8x8();
   auto display = hwlib::terminal_from(oled, font);
 
-  OledDisplay oledDisplay(display, 10);
+  OledDisplay oledDisplay(display, 1);
 
   //testing IR
-  SendTest sendTest(sendIRcontroller, speakerController, 4);
+  SendTest sendTest(sendIRcontroller, speakerController, oledDisplay, 4);
 
   rtos::run();
 }

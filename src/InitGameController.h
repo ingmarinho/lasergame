@@ -94,7 +94,7 @@ public:
             Bit2++;
             Bit3++;
         }
-            hwlib::cout<< message << hwlib::endl; 
+        hwlib::cout << message << hwlib::endl;
     }
 
 private:
@@ -195,9 +195,6 @@ private:
 
                 hwlib::cout << masked_start_cmd << hwlib::endl;
 
-                
-                
-
                 while (KeyID != '#')
                 {
                     wait(KeyChannel);
@@ -213,8 +210,10 @@ private:
             }
 
             default:
+            {
                 hwlib::cout << "help" << hwlib::endl;
                 break;
+            }
             }
         }
     }
