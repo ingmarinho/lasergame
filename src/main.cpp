@@ -17,7 +17,7 @@
 int main()
 {
   // logger
-  auto dumpButton = hwlib::target::pin_in(hwlib::target::pins::d11);
+  auto dumpButton = hwlib::target::pin_in(hwlib::target::pins::d10);
   Logger logger(dumpButton, 0);
 
   //  rungamecontroller
@@ -28,7 +28,7 @@ int main()
   // messagedecoder
   auto tsopSignal = hwlib::target::pin_in(hwlib::target::pins::d8);
   auto led = hwlib::target::pin_out(hwlib::target::pins::d9);
-  MessageDecoder messageDecoder(tsopSignal, led, receiveIRcontroller, logger, 5, 4);
+  MessageDecoder messageDecoder(tsopSignal, led, receiveIRcontroller, logger, 5, 9);
 
   //  sendircontroller
   auto IR = hwlib::target::d2_36kHz();
@@ -36,9 +36,9 @@ int main()
   // auto sw = hwlib::target::pin_in(hwlib::target::pins::d43);
   SendIRController sendIRcontroller(IR, red, 8);
 
-  // speakercontroller
-  //  auto speaker = hwlib::target::pin_out(hwlib::target::pins::d12);
-  //  SpeakerController speakerController(speaker, 6);
+  //speakercontroller
+  auto speaker = hwlib::target::pin_out(hwlib::target::pins::d12);
+  SpeakerController speakerController(speaker, 6);
 
   auto out0 = hwlib::target::pin_oc(hwlib::target::pins::a0);
   auto out1 = hwlib::target::pin_oc(hwlib::target::pins::a1);
@@ -60,17 +60,17 @@ int main()
   InitGameController IGC(Toetsenbord, 2, sendIRcontroller);
 
   // oleddisplay
-  // auto scl = hwlib::target::pin_oc(hwlib::target::pins::scl);
-  // auto sda = hwlib::target::pin_oc(hwlib::target::pins::sda);
-  // auto i2cBus = hwlib::i2c_bus_bit_banged_scl_sda(scl, sda);
-  // auto oled = hwlib::glcd_oled(i2cBus, 0x3c);
-  // auto font = hwlib::font_default_8x8();
-  // auto display = hwlib::terminal_from(oled, font);
+  auto scl = hwlib::target::pin_oc(hwlib::target::pins::scl);
+  auto sda = hwlib::target::pin_oc(hwlib::target::pins::sda);
+  auto i2cBus = hwlib::i2c_bus_bit_banged_scl_sda(scl, sda);
+  auto oled = hwlib::glcd_oled(i2cBus, 0x3c);
+  auto font = hwlib::font_default_8x8();
+  auto display = hwlib::terminal_from(oled, font);
 
-  // OledDisplay oledDisplay(display);
+  OledDisplay oledDisplay(display, 10);
 
-  // testing IR
-  //  SendTest sendTest(sendIRcontroller, speakerController, 4);
+  //testing IR
+  SendTest sendTest(sendIRcontroller, speakerController, 4);
 
   rtos::run();
 }
