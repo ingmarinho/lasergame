@@ -32,7 +32,7 @@ public:
             sendIRController.sendMessage(message3);
             sendIRController.sendMessage(message4);
 
-            // speakerController.addSound(HITSOUND);
+            speakerController.addSound(HITSOUND);
 
             hwlib::wait_ms(2000);
         }

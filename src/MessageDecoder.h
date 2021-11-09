@@ -19,12 +19,12 @@ private:
     state_t state = IDLE;
 
     rtos::channel<int, 1024> pausesChannel;
-    ReceiveIRController &receiveIRController;
     IRReceiver<1> irReceiver;
+    ReceiveIRController &receiveIRController;
     Logger &logger;
 
 public:
-    MessageDecoder(ReceiveIRController &receiveIRController, hwlib::target::pin_in &tsopSignal, hwlib::target::pin_out &led, Logger &logger, unsigned int MessageDecoderPriority, unsigned int IRReceiverPriority);
+    MessageDecoder(hwlib::target::pin_in &tsopSignal, hwlib::target::pin_out &led, ReceiveIRController &receiveIRController, Logger &logger, unsigned int MessageDecoderPriority, unsigned int IRReceiverPriority);
     void pauseDetected(int pause) override;
 private:
     bool createMessage(uint16_t &message, int &pause);

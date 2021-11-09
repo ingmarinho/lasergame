@@ -1,8 +1,8 @@
 #include "ReceiveIRController.h"
 
 
-ReceiveIRController::ReceiveIRController(RunGameController &runGameController, hwlib::target::pin_in &tsopSignal, hwlib::target::pin_out &led, Logger &logger, unsigned int ReceiveIRControllerPriority, unsigned int MessageDecoderPriority, unsigned int IRReceiverPriority)
-    : rtos::task<>(ReceiveIRControllerPriority, "RECEIVEIRCONTROLLER_TASK"), messageChannel(this, "MESSAGE_CHANNEL"), messageDecoder(*this, tsopSignal, led, logger, MessageDecoderPriority, IRReceiverPriority), runGameController(runGameController)
+ReceiveIRController::ReceiveIRController(RunGameController &runGameController, unsigned int priority)
+    : rtos::task<>(priority, "RECEIVEIRCONTROLLER_TASK"), messageChannel(this, "MESSAGE_CHANNEL"), runGameController(runGameController)
 {
 }
 

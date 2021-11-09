@@ -80,8 +80,8 @@ private:
 	uint16_t message = 0x0;
 
 public:
-	SendIRController(hwlib::target::d2_36kHz &IR, hwlib::target::pin_out &led)
-		: delay(this, "delay"), sendChannel(this, "SEND_CHANNEL"), IR(IR), led(led)
+	SendIRController(hwlib::target::d2_36kHz &IR, hwlib::target::pin_out &led, unsigned int priority)
+		: rtos::task<>(priority, "SENDIRCONTROLLER_TASK"), delay(this, "delay"), sendChannel(this, "SEND_CHANNEL"), IR(IR), led(led)
 	{
 	}
 
