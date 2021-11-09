@@ -56,7 +56,7 @@ public:
     }
 };
 
-class InitShotController : public rtos::task<>
+class InitShotController : public rtos::task<>, public ButtonListener
 {
 
 private:
@@ -81,18 +81,16 @@ private:
     button<1> Trigger;
 
 public:
-    InitShotController(hwlib::target::pin_in buttontrigger, unsigned int priority) : rtos::task<>(1, "TRIGGER_TAAK"), Trigger(buttontrigger)
-    {
-        unsigned int i = 0;
-        for (i = 0; i < maxNumberOfListeners; i++)
-        {
-            ButtonListeners[i] = nullptr;
-        }
-    }
-
-    InitGameController(Button &Button, unsigned int priority) : rtos::task<>(priority, "BUTTON_TAAK"), ButtonChannel(this, "BUTTON_CHANNEL"), button(button),
+    InitShotController(hwlib::target::pin_in buttontrigger, unsigned int priority, unsigned int priority1) : rtos::task<>(priority, "TRIGGER_TAAK"),
+                       Trigger(buttontrigger, priority1), ButtonChannel(this, "BUTTON_CHANNEL"), StartGame(this, "StartGame"), GameOver()
     {
         button.addListener(this);
+    }
+    
+
+    InitGameController(Button &Button, unsigned int priority) : rtos::task<>(priority, "BUTTON_TAAK"), , button(button),
+    {
+    
     }
 
     void ButtonPressed(int ButtonID)
