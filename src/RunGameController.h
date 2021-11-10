@@ -1,6 +1,18 @@
 #pragma once
 
+#include "rtos.hpp"
+#include "hwlib.hpp"
 #include <array>
+
+#include "ParametersController.h"
+#include "InitShotController.h"
+#include "InitGameController.h"
+#include "Timer.h"
+#include "ReceiveIRController.h"
+#include "SendIRController.h"
+#include "OledDisplay.h"
+#include "SpeakerController.h"
+#include "TransferHitsController.h"
 
 template <unsigned int maxNumberOfWeapons>
 
@@ -8,10 +20,10 @@ class DamageList {
 private:
 	
 	struct info{
-		string WeaponName;
+		char *WeaponName;
 		int damage;
 		int delay;
-		info(string WeaponName, int damage, int delay) : WeaponName(WeaponName), damage(damage), delay(delay){}
+		info(char *WeaponName, int damage, int delay) : WeaponName(WeaponName), damage(damage), delay(delay){}
 	};
 	
 	std::array<info, maxNumberOfWeapons> Weapons;
@@ -66,7 +78,7 @@ private:
 	int speeltijd = 0;
 public:
 	
-	SetGameTime(int time)
+	void SetGameTime(int time)
 	{
 		speeltijd = time;
 	}

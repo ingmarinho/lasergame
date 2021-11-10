@@ -1,5 +1,7 @@
 #pragma once
 
+#include "rtos.hpp"
+
 class ButtonListener
 {
 public:
@@ -71,14 +73,14 @@ private:
     };
 
     state_t state = STARTGAME;
+    button<1> Trigger;
     rtos::channel<char, 1024> ButtonChannel;
-    rtos::timer Timer;
     rtos::flag ZombieFlag;
     rtos::flag StartGame;
     rtos::flag GameOver;
+    rtos::timer Timer;
     uint16_t Commando;
     int Delay = 2'000'000;
-    button<1> Trigger;
 
 public:
     InitShotController(hwlib::target::pin_in buttontrigger, unsigned int priority, unsigned int priority1) : rtos::task<>(priority, "TRIGGER_TAAK"),
@@ -92,7 +94,7 @@ public:
         ButtonChannel.write(ButtonID);
     }
 
-    void StartGame(uint16_t C, int D)
+    void startGame(uint16_t C, int D)
     {
         Commando = C;
         Delay = D;
@@ -100,12 +102,12 @@ public:
         StartGame.set();
     }
 
-    void GameOver()
+    void gameOver()
     {
         GameOver.set();
     }
 
-    void ZombieFlag()
+    void zombieFlag()
     {
         ZombieFlag.set()
     }
@@ -118,19 +120,19 @@ private:
             switch (state)
             {
             case STARTGAME:
-                wait(StartGame);
+                wait(startGame);
                 state = IDLE;
                 break;
 
             case IDLE:
             {
-                auto event = wait(GameOver + ZombieFlag + ButtonChannel)
+                auto event = wait(gameOver + ZombieFlag + ButtonChannel)
 
                 if (event = ZombieFlag)
                 {
                     state = ZOMBIE;
                 }
-                else if (event = GameOver)
+                else if (event = gameOver)
                 {
                     state = GAMEOVER;
                 }

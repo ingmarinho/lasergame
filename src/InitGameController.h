@@ -1,5 +1,6 @@
 #pragma once
 #include "Toetsenbord4x4.hpp"
+#include "SendIRController.h"
 
 class InitGameController : public rtos::task<>, public KeyPadListener
 {
