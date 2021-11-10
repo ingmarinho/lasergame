@@ -1,39 +1,7 @@
 #pragma once
-
+#include "Hitlog.h"
 #include <array>
 
-struct Hit
-{
-    uint8_t playerID;
-    uint8_t weaponID;
-};
-
-class HitLog
-{
-
-private:
-    unsigned int currentIndex = 0;
-    std::array<Hit, 100> hitLog;
-
-public:
-    HitLog()
-    {
-    }
-
-    void meldHit(Hit hit)
-    {
-        if (currentIndex < 100)
-        {
-            hitLog[currentIndex] = hit;
-            currentIndex++;
-        }
-    }
-
-    std::array& getData()
-    {
-        return hitLog;
-    }
-};
 
 // struct playerStats
 // {
@@ -66,7 +34,7 @@ public:
     }
 
 private:
-    void sortData(const std::array & hits)
+    void sortData(std::array<Hit ,400> hits)
     {
         for (auto &hit : hits)
         {
@@ -83,10 +51,8 @@ private:
             case IDLE:
                 wait(TransferHitsFlag);
 
-                if (TransferHitsFlag)
-                {
-                    state = TRANSFERHITS;
-                }
+                state = TRANSFERHITS;
+            
                 break;
 
             case TRANSFERHITS:

@@ -1,9 +1,10 @@
 #pragma once
 
+#include "Speeltijd.h"
 #include "OledDisplay.h"
 #include "RunGameController.h"
 
-class RunGameController;
+//class RunGameController
 
 class Timer : public rtos::task<>
 {
@@ -57,6 +58,7 @@ private:
                     break;
 
                 case IDLE:
+                {
                     oledDisplay.updateTimer(gametime);
                     delay.set(1000'000);
 
@@ -70,7 +72,7 @@ private:
                     gametime--;
 
                     break;
-
+                }
                 case GAMEOVER:
                     {
                         break;

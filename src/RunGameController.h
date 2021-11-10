@@ -4,7 +4,6 @@
 #include "hwlib.hpp"
 #include <array>
 
-#include "ParametersController.h"
 #include "InitShotController.h"
 #include "InitGameController.h"
 #include "Timer.h"
@@ -13,88 +12,9 @@
 #include "OledDisplay.h"
 #include "SpeakerController.h"
 #include "TransferHitsController.h"
-
-template <unsigned int maxNumberOfWeapons>
-class DamageList
-{
-private:
-    struct info
-    {
-        const char *WeaponName;
-        int damage;
-        int delay;
-        info(const char *WeaponName, int damage, int delay) : WeaponName(WeaponName), damage(damage), delay(delay) {}
-    };
-
-    std::array<info, maxNumberOfWeapons> Weapons;
-
-public:
-    DamageList()
-    {
-
-        info Weapon0("Knife", 10, 1'500'000);
-        Weapons[0] = Weapon0;
-        info Weapon1("Eagle", 15, 2'000'000);
-        Weapons[1] = Weapon1;
-        info Weapon2("Machine Gun", 5, 700'000);
-        Weapons[2] = Weapon2;
-        info Weapon3("AUG", 5, 500'000);
-        Weapons[3] = Weapon3;
-        info Weapon4("AK-47", 25, 3'500'000);
-        Weapons[4] = Weapon4;
-        info Weapon5("M4A4", 20, 3'000'000);
-        Weapons[5] = Weapon5;
-        info Weapon6("AWP", 40, 5'500'000);
-        Weapons[6] = Weapon6;
-        info Weapon7("M249", 3, 500'000);
-        Weapons[7] = Weapon7;
-        info Weapon8("Shotgun", 30, 4'000'000);
-        Weapons[8] = Weapon8;
-        info Weapon9("rbg", 50, 6'500'000);
-        Weapons[9] = Weapon9;
-    }
-
-    const char *GetName(int i)
-    {
-        if (i < maxNumberOfWeapons)
-        {
-            return Weapons[i].WeaponName;
-        }
-    }
-
-    int GetDamage(unsigned int i)
-    {
-        if (i < maxNumberOfWeapons)
-        {
-            return Weapons[i].damage;
-        }
-    }
-
-    int GetDelay(unsigned int i)
-    {
-        if (i < maxNumberOfWeapons)
-        {
-            return Weapons[i].delay;
-        }
-    }
-};
-
-class Speeltijd
-{
-private:
-    int speeltijd = 0;
-
-public:
-    void SetGameTime(int time)
-    {
-        speeltijd = time;
-    }
-
-    int GetGameTime()
-    {
-        return speeltijd;
-    }
-};
+#include "Speeltijd.h"
+#include "DamageList.h"
+#include "Hitlog.h"
 
 class RunGameController : public rtos::task<>
 {
@@ -111,12 +31,10 @@ class RunGameController : public rtos::task<>
 
 private:
     state_t state = REGISTER_GAME_PARAMETERS;
-    ParametersController &parameterscontroller;
     Speeltijd &speeltijd;
     DamageList<10> damagelist;
     InitShotController &initshotcontroller;
     Led green;
-    ReceiveIRController &receiveircontroller;
     Timer &countdown;
     HitLog &hitlog;
     rtos::channel<std::array<int, 2>, 1024> HitChannel;
@@ -170,10 +88,10 @@ private:
 public:
     // nog scherm en speaker controller toevoegen.
 
-    RunGameController(ParametersController &parameterscontroller, Speeltijd &speeltijd, InitShotController &initshotcontroller,
-                      hwlib::target::pin_out &led, ReceiveIRController &receiveircontroller, Timer &countdown, HitLog &hitLog, unsigned int priority)
-        : rtos::task<>(priority, "RunGameController"), parameterscontroller(parameterscontroller), speeltijd(speeltijd), initshotcontroller(initshotcontroller),
-          green(led), receiveircontroller(receiveircontroller), countdown(countdown), HitLog(hitLog), HitChannel(this, "HitChannel"), CmdChannel(this, "CmdChannel"),
+    RunGameController(Speeltijd &speeltijd, InitShotController &initshotcontroller,
+                      hwlib::target::pin_out &led, Timer &countdown, HitLog &hitLog, unsigned int priority)
+        : rtos::task<>(priority, "RunGameController"), speeltijd(speeltijd), initshotcontroller(initshotcontroller),
+          green(led), countdown(countdown), hitLog(hitLog), HitChannel(this, "HitChannel"), CmdChannel(this, "CmdChannel"),
           ParametersChannel(this, "ParametersChannel"), gameover(this, "gameover"), delay(this, "delay")
     {
     }

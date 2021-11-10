@@ -12,6 +12,7 @@
 #include "OledDisplay.h"
 #include "Toetsenbord4x4.hpp"
 #include "InitGameController.h"
+#include "Speeltijd.h"
 
 
 int main()
@@ -20,8 +21,7 @@ int main()
   auto dumpButton = hwlib::target::pin_in(hwlib::target::pins::d10);
   Logger logger(dumpButton, 0);
 
-  //  rungamecontroller
-  RunGameController runGameController;
+
 
   ReceiveIRController receiveIRcontroller(runGameController, 1); // priority MessageDecoder, priority IRReceiver
 
@@ -73,6 +73,17 @@ int main()
 
   //testing IR
   SendTest sendTest(sendIRcontroller, speakerController, oledDisplay, 4);
+
+    //  rungamecontroller
+
+  Speeltijd speeltijd();
+  auto rungameled = hwlib::target::pin_out(hwlib::target::pins::d7);
+  
+  Timer countdown(oledDisplay, speeltijd, 2);
+  
+  HitLog hitlog();
+  
+  RunGameController runGameController(speeltijd, InitShotController, rungameled, countdown, hitlog, 4);
 
   rtos::run();
 }

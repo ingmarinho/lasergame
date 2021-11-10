@@ -1,6 +1,8 @@
 #pragma once
 
 #include "rtos.hpp"
+#include "SendIRController.h"
+#include "Speeltijd.h"
 
 class ButtonListener
 {
@@ -76,7 +78,7 @@ private:
     button<1> Trigger;
     rtos::channel<char, 1024> ButtonChannel;
     rtos::flag ZombieFlag;
-    rtos::flag StartGame;
+    rtos::flag startgame;
     rtos::flag GameOver;
     rtos::timer Timer;
     SendIRController &sendIRController;
@@ -85,9 +87,9 @@ private:
 
 public:
     InitShotController(hwlib::target::pin_in buttontrigger, SendIRController &sendIRController, unsigned int priority, unsigned int priority1) : rtos::task<>(priority, "TRIGGER_TAAK"),
-                                                                                                             Trigger(buttontrigger, priority1), ButtonChannel(this, "BUTTON_CHANNEL"), ZombieFlag(this, "ZombieFlag") StartGame(this, "StartGame"), GameOver(this, "GameOver"), Timer(this, "Timer"), sendIRController(sendIRController)
+                                                                                                                                                 Trigger(buttontrigger, priority1), ButtonChannel(this, "BUTTON_CHANNEL"), ZombieFlag(this, "ZombieFlag"), startgame(this, "StartGame"), GameOver(this, "GameOver"), Timer(this, "Timer"), sendIRController(sendIRController)
     {
-        button.addListener(this);
+        Trigger.addListener(this);
     }
 
     void ButtonPressed(int ButtonID)
@@ -100,7 +102,7 @@ public:
         Commando = C;
         Delay = D;
 
-        StartGame.set();
+        startgame.set();
     }
 
     void gameOver()
@@ -110,7 +112,7 @@ public:
 
     void zombieFlag()
     {
-        ZombieFlag.set()
+        ZombieFlag.set();
     }
 
 private:
@@ -121,53 +123,51 @@ private:
             switch (state)
             {
             case STARTGAME:
-                wait(startGame);
+                wait(startgame);
                 state = IDLE;
                 break;
 
             case IDLE:
             {
-                auto event = wait(gameOver + ZombieFlag + ButtonChannel)
+                auto event = wait(GameOver + ZombieFlag + ButtonChannel);
 
-                if (event = ZombieFlag)
+                if (event == ZombieFlag)
                 {
                     state = ZOMBIE;
                 }
-                else if (event = gameOver)
+                else if (event == GameOver)
                 {
                     state = GAMEOVER;
                 }
-                else if (event = ButtonChannel)
+                else if (event == ButtonChannel)
                 {
                     state = SENDIR;
                 }
-            }
                 break;
+            }
 
             case ZOMBIE:
 
             {
-                timer.set(delay);
-                wait(delay);  
+                Timer.set(Delay);
+                wait(Timer);
 
-                state = IDLE; 
+                state = IDLE;
             }
 
-                break;
+            break;
 
             case SENDIR:
-            {    
+            {
                 sendIRController.sendMessage(Commando);
                 state = IDLE;
             }
-            
-                break;
 
-            case GAMEOVER:
-            
             break;
 
-           
+            case GAMEOVER:
+
+                break;
             }
         }
     }

@@ -3,7 +3,7 @@
 #include "Toetsenbord4x4.hpp"
 #include "RunGameController.h"
 
-class RunGameController;
+
 
 class ParametersController : public rtos::task<>
 {
