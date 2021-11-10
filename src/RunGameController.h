@@ -85,10 +85,7 @@ class RunGameController : public rtos::task<>
         REGISTER_GAME_PARAMETERS,
         HIT_RECEIVED,
         CMD_RECEIVER,
-        MELDSPEELTIJD,
         WAIT_COUNTDOWN,
-        DISPLAY_COUNTDOWN,
-        START_SIGNAL,
         ZOMBIE,
         GAMEOVER
 	};
@@ -107,9 +104,54 @@ private:
 	rtos::channel<std::array<int, 2>, 1024> ParametersChannel;
 	rtos::flag gameover;
 	rtos::timer delay;
+	int hp = 1000;
+	
+	void checksum(uint16_t &message)
+	{
+		int Bit1 = 1;
+		int Bit2 = 6;
+		int Bit3 = 11;
+		
+		uint16_t Mask1;
+		uint16_t Mask2;
+		uint16_t Mask3;
+		
+		uint16_t New1;
+		uint16_t New2;
+		uint16_t New3;
+		
+		for (int i = 0; i < 5; i++)
+		{
+			Mask1 = 0x1;
+			Mask2 = 0x1;
+			Mask3 = 0x1;
+			
+			Mask1 <<= Bit1;
+			Mask2 <<= Bit2;
+			Mask3 <<= Bit3;
+			
+			New1 = message & Mask1;
+			
+			// hwlib::cout << "NEW1:" << New1 << hwlib::endl;
+			New2 = message & Mask2;
+			// hwlib::cout << "NEW2:" << New2 << hwlib::endl;
+			New3 = (New1 << 10) ^ (New2 << 5);
+			// hwlib::cout << "XOR:" << New3 << hwlib::endl;
+			message |= New3;
+			// hwlib::cout << "OR:" << message << hwlib::endl;
+			
+			Bit1++;
+			Bit2++;
+			Bit3++;
+		}
+		hwlib::cout << message << hwlib::endl;
+	}
 
 
 public:
+	
+	// nog scherm en speaker controller toevoegen.
+	
 	RunGameController(ParametersController &parameterscontroller, Speeltijd &speeltijd, InitShotController &initshotcontroller,
 	                  hwlib::target::pin_out &led, ReceiveIRController &receiveircontroller, Timer &countdown, HitLog &hitLog, unsigned int priority)
 	                  : rtos::task<>(priority, "RunGameController"), parameterscontroller(parameterscontroller), speeltijd(speeltijd), initshotcontroller(initshotcontroller),
@@ -194,34 +236,69 @@ private:
                 break;
 
             case HIT_RECEIVED:
-
+				hitlog.meldHit(enemyID, enemyWeapon);
+				hp -= damagelist.GetDamage();
+				initshotcontroller.Zombie();
+				state = ZOMBIE;
+				
                 break;
 
             case CMD_RECEIVER:
-
+            	if(cmd == 10){
+            		speeltijd.SetGameTIme(data);
+            		state = IDLE
+            	}
+            	else if(cmd == 11)
+	            {
+					state = WAIT_COUNTDOWN;
+	            }
                 break;
-
-            case MELDSPEELTIJD:
-
-                break;
+            	
 
             case WAIT_COUNTDOWN:
-
-                break;
-            case DISPLAY_COUNTDOWN:
-
-                break;
-
-            case START_SIGNAL:
-
+	            
+            	while (data !< 0){
+            		// laat countdown zien!!!!!!!!!!!!!!
+					delay.set(1'000'000);
+					wait(delay);
+					data--;
+	            }
+            	int d = damagelist.GetDelay(WeaponID);
+            	uint16_t c = PlayerID;
+            	c <<= 1;
+	            uint16_t masker = WeaponID;
+	            masker <<= 6;
+	            c |= masker;
+	            checksum(c);
+            	initshotcontroller.StartGame(c, d);
+            	countdown.StartTimer();
+            	state = IDLE;
                 break;
 
             case ZOMBIE:
-
-                break;
+            
+				delay.set(2'000'000);
+				
+				for(;;)
+				{
+					auto evt = wait(delay + HitChannel);
+					
+					if (evt == delay)
+					{
+						state = IDLE;
+						break;
+					}
+					else
+					{
+						std::array<int, 2> dummy = HitChannel.read();
+						
+					}
+				}
+				
+	            break;
             
             case GAMEOVER:
-            	
+            	// Display Game Over!!!!!!!
             	break;
             }
             break;

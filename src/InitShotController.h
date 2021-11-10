@@ -77,7 +77,7 @@ private:
     rtos::flag StartGame;
     rtos::flag GameOver;
     uint16_t Commando;
-    int Delay;
+    int Delay = 2'000'000;
     button<1> Trigger;
 
 public:

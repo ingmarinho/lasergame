@@ -14,8 +14,8 @@ class Timer : public rtos::task<>
 private:
     state_t state = STARTGAME;
 
-    rtos::flag(StartFlag);
-    rtos::flag(StopFlag);
+    rtos::flag StartFlag;
+    rtos::flag StopFlag;
     Display &display;
     rtos::timer delay;
     int gametime = speeltijd;
@@ -23,6 +23,16 @@ private:
 public:
     Timer(display(display), unsigned int priority) : rtos::task<>(priority, "TIMER_TAAK"), delay(this, 'delay')
     {
+    }
+    
+    void StartTimer()
+    {
+    	StartFlag.set();
+    }
+    
+    void StopFlag()
+    {
+        StopFlag.set();
     }
 
 private:
