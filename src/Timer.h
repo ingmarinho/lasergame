@@ -3,6 +3,8 @@
 #include "OledDisplay.h"
 #include "RunGameController.h"
 
+class RunGameController;
+
 class Timer : public rtos::task<>
 {
 
@@ -24,9 +26,10 @@ private:
     int gametime;
 
 public:
-    Timer(OledDisplay& oledDisplay, Speeltijd &speeltijd, unsigned int priority) : rtos::task<>(priority, "TIMER_TAAK"), StartFlag(this, "START_FLAG"), StopFlag(this, "STOP_FLAG"), delay(this, "DELAY"), oledDisplay(oledDisplay), speeltijd(speeltijd)
+    Timer(OledDisplay& oledDisplay, Speeltijd &speeltijd, unsigned int priority) 
+    : rtos::task<>(priority, "TIMER_TAAK"), StartFlag(this, "START_FLAG"), StopFlag(this, "STOP_FLAG"), delay(this, "DELAY"), oledDisplay(oledDisplay), speeltijd(speeltijd)
     {
-
+        gametime = speeltijd.GetGameTime();
     }
     
     void startTimer()
@@ -54,12 +57,12 @@ private:
                     break;
 
                 case IDLE:
-                    display.showTime(gametime);
+                    oledDisplay.updateTimer(gametime);
                     delay.set(1000'000);
 
                     auto evt = wait(delay + StopFlag);
 
-                    if(evt = StopFlag)
+                    if(evt == StopFlag)
                     {
                         state = GAMEOVER;
                     }
@@ -69,8 +72,9 @@ private:
                     break;
 
                 case GAMEOVER:
-
-                    break;
+                    {
+                        break;
+                    }
             }
             break;
         }

@@ -25,7 +25,7 @@ private:
     hwlib::terminal_from &display;
     const char *selectedGun = "ak-47";
     unsigned int playerID = 1;
-    // unsigned int timer;
+    unsigned int timer = 0;
     unsigned int hitPoints = 100;
 
 public:
@@ -44,9 +44,10 @@ public:
         playerID = PID;
     }
 
-    // void updateTimer()
-    // {
-    // }
+    void updateTimer(const unsigned int time)
+    {
+        timer = time;
+    }
 
     void setHitPoints(const int &HP)
     {

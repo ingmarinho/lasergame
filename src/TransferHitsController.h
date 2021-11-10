@@ -18,7 +18,6 @@ private:
 public:
     HitLog()
     {
-        hitLog.fill(0);
     }
 
     void meldHit(Hit hit)
@@ -71,7 +70,7 @@ private:
     {
         for (auto &hit : hits)
         {
-            if (hit.playerID == )
+            // if (hit.playerID == )
         }
     }
 
@@ -82,7 +81,7 @@ private:
             switch (state)
             {
             case IDLE:
-                wait(TransferHitsFlag)
+                wait(TransferHitsFlag);
 
                 if (TransferHitsFlag)
                 {
@@ -92,7 +91,7 @@ private:
 
             case TRANSFERHITS:
 
-                std::array data = hitlog.getData();
+                std::array data = hitLog.getData();
 
 
 

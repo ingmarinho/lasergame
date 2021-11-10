@@ -2,7 +2,6 @@
 
 #include "IRReceiver.h"
 #include "ReceiveIRController.h"
-#include "Logger.h"
 
 class ReceiveIRController;
 
@@ -24,7 +23,7 @@ private:
     Logger &logger;
 
 public:
-    MessageDecoder(hwlib::target::pin_in &tsopSignal, hwlib::target::pin_out &led, ReceiveIRController &receiveIRController, Logger &logger, unsigned int MessageDecoderPriority, unsigned int IRReceiverPriority);
+    MessageDecoder(hwlib::target::pin_in &tsopSignal, hwlib::target::pin_out &led, ReceiveIRController &receiveIRController, unsigned int MessageDecoderPriority, unsigned int IRReceiverPriority);
     void pauseDetected(int pause) override;
 private:
     bool createMessage(uint16_t &message, int &pause);

@@ -79,12 +79,13 @@ private:
     rtos::flag StartGame;
     rtos::flag GameOver;
     rtos::timer Timer;
+    SendIRController &sendIRController;
     uint16_t Commando;
     int Delay = 2'000'000;
 
 public:
-    InitShotController(hwlib::target::pin_in buttontrigger, unsigned int priority, unsigned int priority1) : rtos::task<>(priority, "TRIGGER_TAAK"),
-                                                                                                             Trigger(buttontrigger, priority1), ButtonChannel(this, "BUTTON_CHANNEL"), ZombieFlag(this, "ZombieFlag") StartGame(this, "StartGame"), GameOver(this, "GameOver"), Timer(this, "Timer")
+    InitShotController(hwlib::target::pin_in buttontrigger, SendIRController &sendIRController, unsigned int priority, unsigned int priority1) : rtos::task<>(priority, "TRIGGER_TAAK"),
+                                                                                                             Trigger(buttontrigger, priority1), ButtonChannel(this, "BUTTON_CHANNEL"), ZombieFlag(this, "ZombieFlag") StartGame(this, "StartGame"), GameOver(this, "GameOver"), Timer(this, "Timer"), sendIRController(sendIRController)
     {
         button.addListener(this);
     }
@@ -156,7 +157,7 @@ private:
 
             case SENDIR:
             {    
-                sendIRcontroller.sendMessage(Commando);
+                sendIRController.sendMessage(Commando);
                 state = IDLE;
             }
             
