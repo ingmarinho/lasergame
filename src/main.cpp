@@ -21,19 +21,19 @@ int main()
   Logger logger(dumpButton, 0);
 
   //  rungamecontroller
-  // RunGameController runGameController;
+  RunGameController runGameController;
 
-  // ReceiveIRController receiveIRcontroller(runGameController, 1); // priority MessageDecoder, priority IRReceiver
+  ReceiveIRController receiveIRcontroller(runGameController, 1); // priority MessageDecoder, priority IRReceiver
 
   // messagedecoder
-  // auto tsopSignal = hwlib::target::pin_in(hwlib::target::pins::d8);
-  // auto led = hwlib::target::pin_out(hwlib::target::pins::d9);
-  // MessageDecoder messageDecoder(tsopSignal, led, receiveIRcontroller, logger, 5, 9);
+  auto tsopSignal = hwlib::target::pin_in(hwlib::target::pins::d8);
+  auto led = hwlib::target::pin_out(hwlib::target::pins::d9);
+  MessageDecoder messageDecoder(tsopSignal, led, receiveIRcontroller, logger, 5, 9);
 
   //  sendircontroller
   auto IR = hwlib::target::d2_36kHz();
   auto red = hwlib::target::pin_out(hwlib::target::pins::d42);
-  // auto sw = hwlib::target::pin_in(hwlib::target::pins::d43);
+  auto sw = hwlib::target::pin_in(hwlib::target::pins::d43);
   SendIRController sendIRcontroller(IR, red, 8);
 
   //speakercontroller
