@@ -2,43 +2,38 @@
 
 #include <array>
 
+#include "DamageInfo.h"
+
 template <unsigned int maxNumberOfWeapons>
 class DamageList
 {
 private:
-    struct info
-    {
-        const char *WeaponName;
-        int damage;
-        int delay;
-        info(const char *WeaponName, int damage, int delay) : WeaponName(WeaponName), damage(damage), delay(delay) {}
-    };
 
-    std::array<info, maxNumberOfWeapons> Weapons;
+    std::array<DamageInfo, maxNumberOfWeapons> Weapons;
 
 public:
     DamageList()
     {
 
-        info Weapon0("Knife", 10, 1'500'000);
+        DamageInfo Weapon0("Knife", 10, 1'500'000);
         Weapons[0] = Weapon0;
-        info Weapon1("Eagle", 15, 2'000'000);
+        DamageInfo Weapon1("Eagle", 15, 2'000'000);
         Weapons[1] = Weapon1;
-        info Weapon2("Machine Gun", 5, 700'000);
+        DamageInfo Weapon2("Machine Gun", 5, 700'000);
         Weapons[2] = Weapon2;
-        info Weapon3("AUG", 5, 500'000);
+        DamageInfo Weapon3("AUG", 5, 500'000);
         Weapons[3] = Weapon3;
-        info Weapon4("AK-47", 25, 3'500'000);
+        DamageInfo Weapon4("AK-47", 25, 3'500'000);
         Weapons[4] = Weapon4;
-        info Weapon5("M4A4", 20, 3'000'000);
+        DamageInfo Weapon5("M4A4", 20, 3'000'000);
         Weapons[5] = Weapon5;
-        info Weapon6("AWP", 40, 5'500'000);
+        DamageInfo Weapon6("AWP", 40, 5'500'000);
         Weapons[6] = Weapon6;
-        info Weapon7("M249", 3, 500'000);
+        DamageInfo Weapon7("M249", 3, 500'000);
         Weapons[7] = Weapon7;
-        info Weapon8("Shotgun", 30, 4'000'000);
+        DamageInfo Weapon8("Shotgun", 30, 4'000'000);
         Weapons[8] = Weapon8;
-        info Weapon9("rbg", 50, 6'500'000);
+        DamageInfo Weapon9("rbg", 50, 6'500'000);
         Weapons[9] = Weapon9;
     }
 

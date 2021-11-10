@@ -37,7 +37,7 @@ void ReceiveIRController::main()
             mask = 0b0000'0111'1100'0000;
             res = message & mask;
             data = res >> 6;
-            runGameController.meldCMDReceived(cmdType, data);
+            runGameController.MeldCMDReceived(cmdType, data);
         }
         else if (res >= 0 && res <= 9)
         {
@@ -45,7 +45,7 @@ void ReceiveIRController::main()
             mask = 0b0000'0111'1100'0000;
             res = message & mask;
             weaponID = res >> 6;
-            runGameController.meldHitReceived(playerID, weaponID);
+            runGameController.MeldHitReceived(playerID, weaponID);
         }
     }
 }

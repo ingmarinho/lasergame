@@ -22,15 +22,16 @@ private:
     displayScreens displayScreen;
 
     rtos::channel<displayScreens, 1024> screenChannel;
-    hwlib::terminal_from &display;
+    hwlib::terminal_from &display8x8;
+    hwlib::terminal_from &display16x16;
     const char *selectedGun = "ak-47";
     unsigned int playerID = 1;
-    unsigned int timer = 0;
+    unsigned int timer;
     unsigned int hitPoints = 100;
 
 public:
-    OledDisplay(hwlib::terminal_from &display, unsigned int priority)
-        : rtos::task<>(priority, "OLEDDISPLAY_TASK"), screenChannel(this, "SCREEN_CHANNEL"), display(display)
+    OledDisplay(hwlib::terminal_from &display8x8, hwlib::terminal_from &display16x16, unsigned int priority)
+        : rtos::task<>(priority, "OLEDDISPLAY_TASK"), screenChannel(this, "SCREEN_CHANNEL"), display8x8(display8x8), display16x16(display16x16)
     {
     }
 
@@ -44,7 +45,7 @@ public:
         playerID = PID;
     }
 
-    void updateTimer(const unsigned int time)
+    void updateTimer(const int &time)
     {
         timer = time;
     }
@@ -79,7 +80,7 @@ private:
                     state = DISPLAYING;
                 }
                 break;
-            
+
             case SWITCH_SCREEN:
                 hwlib::cout << "switching\n";
                 displayScreen = tempScreen;
@@ -90,14 +91,14 @@ private:
                 switch (displayScreen)
                 {
                 case GAME_START:
-                    display
+                    display8x8
                         << "\f"
                         << "\n\nWaiting for game start.."
                         << hwlib::flush;
                     hwlib::wait_ms(100);
 
                     tempScreen = screenChannel.read();
-                    if (tempScreen >= 0)
+                    if (tempScreen)
                     {
                         state = SWITCH_SCREEN;
                     }
@@ -105,7 +106,7 @@ private:
                     break;
 
                 case PLAYER_ALIVE:
-                    display
+                    display8x8
                         << "\f"
                         << "Player: " << playerID << "\n"
                         << "HP: " << hitPoints << "\n"
@@ -114,7 +115,7 @@ private:
                     hwlib::wait_ms(100);
 
                     tempScreen = screenChannel.read();
-                    if (tempScreen >= 0)
+                    if (tempScreen)
                     {
                         state = SWITCH_SCREEN;
                     }

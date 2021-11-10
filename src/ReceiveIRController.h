@@ -2,7 +2,6 @@
 
 #include "MessageDecoder.h"
 #include "RunGameController.h"
-#include "Logger.h"
 
 class RunGameController;
 

@@ -86,7 +86,7 @@ private:
     int Delay = 2'000'000;
 
 public:
-    InitShotController(hwlib::target::pin_in buttontrigger, SendIRController &sendIRController, unsigned int priority, unsigned int priority1) : rtos::task<>(priority, "TRIGGER_TAAK"),
+    InitShotController(hwlib::target::pin_in& buttontrigger, SendIRController &sendIRController, unsigned int priority, unsigned int priority1) : rtos::task<>(priority, "TRIGGER_TAAK"),
                                                                                                                                                  Trigger(buttontrigger, priority1), ButtonChannel(this, "BUTTON_CHANNEL"), ZombieFlag(this, "ZombieFlag"), startgame(this, "StartGame"), GameOver(this, "GameOver"), Timer(this, "Timer"), sendIRController(sendIRController)
     {
         Trigger.addListener(this);

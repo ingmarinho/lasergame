@@ -5,31 +5,35 @@ struct Hit
 {
     uint8_t playerID;
     uint8_t weaponID;
+    Hit(uint8_t PlayerID, uint8_t WeaponID)
+    :   playerID(PlayerID), weaponID(WeaponID)
+    {}
 };
 
 class HitLog
 {
-
 private:
     unsigned int currentIndex = 0;
-    std::array<Hit, 400> hitLog;
+    std::array<Hit, 400> logs;
 
 public:
     HitLog()
     {
     }
 
-    void meldHit(Hit hit)
+    void meldHit(uint8_t playerID, uint8_t weaponID)
     {
+        Hit hit(playerID, weaponID);
+
         if (currentIndex < 100)
         {
-            hitLog[currentIndex] = hit;
+            logs[currentIndex] = hit;
             currentIndex++;
         }
     }
 
     std::array<Hit, 400> getData()
     {
-        return hitLog;
+        return logs;
     }
 };

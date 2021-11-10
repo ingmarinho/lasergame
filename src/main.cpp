@@ -14,29 +14,20 @@
 #include "InitGameController.h"
 #include "Speeltijd.h"
 
-
 int main()
 {
   // logger
   auto dumpButton = hwlib::target::pin_in(hwlib::target::pins::d10);
   Logger logger(dumpButton, 0);
 
-
-
-  ReceiveIRController receiveIRcontroller(runGameController, 1); // priority MessageDecoder, priority IRReceiver
-
-  // messagedecoder
-  auto tsopSignal = hwlib::target::pin_in(hwlib::target::pins::d8);
-  auto led = hwlib::target::pin_out(hwlib::target::pins::d9);
-  MessageDecoder messageDecoder(tsopSignal, led, receiveIRcontroller, logger, 5, 9);
+  // RunGameController &runGameController;
 
   //  sendircontroller
   auto IR = hwlib::target::d2_36kHz();
   auto red = hwlib::target::pin_out(hwlib::target::pins::d42);
-  // auto sw = hwlib::target::pin_in(hwlib::target::pins::d43);
   SendIRController sendIRcontroller(IR, red, 8);
 
-  //speakercontroller
+  // speakercontroller
   auto speaker = hwlib::target::pin_out(hwlib::target::pins::d12);
   SpeakerController speakerController(speaker, 6);
 
@@ -71,19 +62,31 @@ int main()
 
   OledDisplay oledDisplay(display8x8, display16x16, 1);
 
-  //testing IR
+  // testing IR
   SendTest sendTest(sendIRcontroller, speakerController, oledDisplay, 4);
 
-    //  rungamecontroller
+  //  rungamecontroller
 
-  Speeltijd speeltijd();
+  Speeltijd speeltijd;
   auto rungameled = hwlib::target::pin_out(hwlib::target::pins::d7);
-  
+
   Timer countdown(oledDisplay, speeltijd, 2);
-  
-  HitLog hitlog();
-  
-  RunGameController runGameController(speeltijd, InitShotController, rungameled, countdown, hitlog, 4);
+
+  // std::array<Hit, 400> &hitLog;
+  // HitLog hitLog;
+
+  auto trigger = hwlib::target::pin_in(hwlib::target::pins::d43);
+  InitShotController initShotController(trigger, sendIRcontroller, 10, 11);
+
+  auto runGameLED = hwlib::target::pin_out(hwlib::target::pins::d45);
+  RunGameController runGameController(speeltijd, initShotController, runGameLED, countdown, hitLog, 4);
+
+  ReceiveIRController receiveIRcontroller(runGameController, 1); // priority MessageDecoder, priority IRReceiver
+
+  // messagedecoder
+  auto tsopSignal = hwlib::target::pin_in(hwlib::target::pins::d8);
+  auto led = hwlib::target::pin_out(hwlib::target::pins::d9);
+  MessageDecoder messageDecoder(tsopSignal, led, receiveIRcontroller, 5, 9);
 
   rtos::run();
 }

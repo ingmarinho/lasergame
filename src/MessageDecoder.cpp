@@ -1,8 +1,8 @@
 #include "MessageDecoder.h"
 
 
-MessageDecoder::MessageDecoder(hwlib::target::pin_in &tsopSignal, hwlib::target::pin_out &led, ReceiveIRController &receiveIRController, Logger &logger, unsigned int MessageDecoderPriority, unsigned int IRReceiverPriority)
-    : rtos::task<>(MessageDecoderPriority, "MESSAGEDECODER_TASK"), pausesChannel(this, "PAUSE_CHANNEL"), irReceiver(tsopSignal, led, IRReceiverPriority), receiveIRController(receiveIRController), logger(logger)
+MessageDecoder::MessageDecoder(hwlib::target::pin_in &tsopSignal, hwlib::target::pin_out &led, ReceiveIRController &receiveIRController, unsigned int MessageDecoderPriority, unsigned int IRReceiverPriority)
+    : rtos::task<>(MessageDecoderPriority, "MESSAGEDECODER_TASK"), pausesChannel(this, "PAUSE_CHANNEL"), irReceiver(tsopSignal, led, IRReceiverPriority), receiveIRController(receiveIRController)
 {
     irReceiver.addListener(this);
 }

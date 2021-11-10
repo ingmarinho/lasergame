@@ -7,14 +7,14 @@
 #include "InitShotController.h"
 #include "InitGameController.h"
 #include "Timer.h"
-#include "ReceiveIRController.h"
 #include "SendIRController.h"
 #include "OledDisplay.h"
 #include "SpeakerController.h"
 #include "TransferHitsController.h"
+#include "Hitlog.h"
+#include "ReceiveIRController.h"
 #include "Speeltijd.h"
 #include "DamageList.h"
-#include "Hitlog.h"
 
 class RunGameController : public rtos::task<>
 {
@@ -33,10 +33,13 @@ private:
     state_t state = REGISTER_GAME_PARAMETERS;
     Speeltijd &speeltijd;
     DamageList<10> damagelist;
+    // 
+    // ReceiveIRController receiveIRcontroller;
+    //
     InitShotController &initshotcontroller;
     Led green;
     Timer &countdown;
-    HitLog &hitlog;
+    HitLog &hitLog;
     rtos::channel<std::array<int, 2>, 1024> HitChannel;
     rtos::channel<std::array<int, 2>, 1024> CmdChannel;
     rtos::channel<std::array<int, 2>, 1024> ParametersChannel;
@@ -175,7 +178,7 @@ private:
             }
             case HIT_RECEIVED:
             {
-                HitLog.meldHit(enemyID, enemyWeapon);
+                hitLog.meldHit(enemyID, enemyWeapon);
                 hp -= damagelist.GetDamage(WeaponID);
                 initshotcontroller.zombieFlag();
                 state = ZOMBIE;
