@@ -1,6 +1,7 @@
 #pragma once
 
 #include "OledDisplay.h"
+#include "RunGameController.h"
 
 class Timer : public rtos::task<>
 {
@@ -17,21 +18,23 @@ private:
 
     rtos::flag StartFlag;
     rtos::flag StopFlag;
-    OledDisplay &oledDisplay;
     rtos::timer delay;
-    int gametime = speeltijd;
+    OledDisplay &oledDisplay;
+    Speeltijd & speeltijd;
+    int gametime;
 
 public:
-    Timer(OledDisplay& oledDisplay, unsigned int priority) : rtos::task<>(priority, "TIMER_TAAK"), StartFlag(), StopFlag(), delay(this, "DELAY")
+    Timer(OledDisplay& oledDisplay, Speeltijd &speeltijd, unsigned int priority) : rtos::task<>(priority, "TIMER_TAAK"), StartFlag(this, "START_FLAG"), StopFlag(this, "STOP_FLAG"), delay(this, "DELAY"), oledDisplay(oledDisplay), speeltijd(speeltijd)
     {
+
     }
     
-    void StartTimer()
+    void startTimer()
     {
     	StartFlag.set();
     }
     
-    void StopFlag()
+    void stopFlag()
     {
         StopFlag.set();
     }

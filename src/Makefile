@@ -12,7 +12,7 @@
 SOURCES := MessageDecoder.cpp ReceiveIRController.cpp
 
 # header files in this project
-HEADERS := DebugStats.h IRReceiver.h SendIRController.h MessageDecoder.h ReceiveIRController.h initGameController.h
+HEADERS := IRReceiver.h SendIRController.h MessageDecoder.h ReceiveIRController.h InitGameController.h RunGameController.h
 
 # other places to look for files for this project
 SEARCH  := 

@@ -4,6 +4,8 @@
 #include "RunGameController.h"
 #include "Logger.h"
 
+class RunGameController;
+
 class ReceiveIRController : public rtos::task<>
 {
 private:

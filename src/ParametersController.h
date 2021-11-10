@@ -3,6 +3,8 @@
 #include "Toetsenbord4x4.hpp"
 #include "RunGameController.h"
 
+class RunGameController;
+
 class ParametersController : public rtos::task<>
 {
 
@@ -23,7 +25,7 @@ private:
 
 public:
     ParametersController(Toetsenbord4x4<> &keypad, RunGameController &runGameController, unsigned int priority) 
-    : rtos::task<>(priority, "PARAMETERS_TAAK"), KeyChannel(this, "KEY_CHANNEL"), keypad(keypad), RunGameController(RunGameController)
+    : rtos::task<>(priority, "PARAMETERS_TAAK"), KeyChannel(this, "KEY_CHANNEL"), keypad(keypad), runGameController(runGameController)
     {
         keypad.addListener(this);
     }

@@ -4,8 +4,8 @@
 
 struct Hit
 {
-    int playerID,
-    int weaponID
+    uint8_t playerID,
+    uint8_t weaponID
 };
 
 // template<int hitSize>
@@ -37,11 +37,11 @@ public:
     }
 };
 
-struct playerStats
-{
-    int playerID,
-    int damage
-}
+// struct playerStats
+// {
+//     int playerID,
+//     int damage
+// }
 
 template<int playerAmount>
 class TransferHitsController : public rtos::task<>
@@ -55,14 +55,14 @@ class TransferHitsController : public rtos::task<>
 private:
     state_t state = IDLE;
 
-    rtos::flag(TransferHitsFlag);
+    rtos::flag TransferHitsFlag;
 
-    Hitlog &hitLog;
-    std::array<playerAmount, playerStats>;
+    HitLog &hitLog;
+    // std::array<playerAmount, playerStats>;
 
 public:
     TransferHitsController(HitLog &hitLog, unsigned int priority)
-        : rtos::task<>(priority, "TRANSFERHITSCONTROLLER_TASK"), hitLog(hitLog)
+        : rtos::task<>(priority, "TRANSFERHITSCONTROLLER_TASK"), TransferHitsFlag(this, "TRANSFERHITS_FLAG"), hitLog(hitLog)
     {
         
     }
