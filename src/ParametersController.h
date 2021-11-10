@@ -1,5 +1,7 @@
 #pragma once
- 
+
+#include "Toetsenbord4x4.hpp"
+#include "RunGameController.h"
 
 class ParametersController : public rtos::task<>
 {
@@ -17,9 +19,11 @@ private:
 
     rtos::channel<char, 1024> KeyChannel;
     Toetsenbord4x4<1> &keypad;
-    RunGameController &RunGameController; 
+    RunGameController &runGameController;
+
 public:
-    ParametersController(Toetsenbord4x4<1> &keypad, unsigned int priority) : rtos::task<>(priority, "PARAMETERS_TAAK"), KeyChannel(this, "KEY_CHANNEL"), keypad(keypad), RunGameController(RunGameController)
+    ParametersController(Toetsenbord4x4<> &keypad, RunGameController &runGameController, unsigned int priority) 
+    : rtos::task<>(priority, "PARAMETERS_TAAK"), KeyChannel(this, "KEY_CHANNEL"), keypad(keypad), RunGameController(RunGameController)
     {
         keypad.addListener(this);
     }
@@ -32,14 +36,16 @@ private:
 
     void main()
     {
+        char KeyID;
         for (;;)
         {
             switch (state)
             {
             case IDLE:
+            {
                 wait(KeyChannel);
 
-                char KeyID = KeyChannel.read();
+                KeyID = KeyChannel.read();
 
                 if (KeyID == 'A')
                 {
@@ -52,12 +58,12 @@ private:
                 }
                 else if (KeyID == '*' && PlayerNumber && WeaponNumber)
                 {
-                    state = GAME_IS_RUNNING; 
+                    state = GAME_IS_RUNNING;
                 }
                 break;
-
+            }
             case GET_FIRE_POWER:
-
+            {
                 if (KeyID >= '0' && KeyID <= '9')
                 {
                     WeaponID = (int)KeyID - 48;
@@ -65,23 +71,24 @@ private:
                 }
 
                 break;
-
+            }
             case GET_PLAYER_NUMBER:
-
+            {
                 if (KeyID >= '0' && KeyID <= '9')
                 {
                     PlayerID = (int)KeyID - 48;
                     PlayerNumber = true;
                 }
-                
+
                 break;
-
+            }
             case GAME_IS_RUNNING:
-
+            {
                 RunGameController.MeldGameParameters(PlayerID, WeaponID);
 
                 break;
             }
+            
             break;
         }
     }
