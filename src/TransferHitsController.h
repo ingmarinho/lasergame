@@ -4,8 +4,8 @@
 
 struct Hit
 {
-    uint8_t playerID,
-    uint8_t weaponID
+    uint8_t playerID;
+    uint8_t weaponID;
 };
 
 class HitLog
@@ -30,7 +30,7 @@ public:
         }
     }
 
-    const std::array& getData()
+    std::array& getData()
     {
         return hitLog;
     }
