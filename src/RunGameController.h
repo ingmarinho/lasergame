@@ -89,34 +89,108 @@ class RunGameController : public rtos::task<>
         WAIT_COUNTDOWN,
         DISPLAY_COUNTDOWN,
         START_SIGNAL,
-        ZOMBIE
+        ZOMBIE,
+        GAMEOVER
 	};
 private:
-    state_t state = IDLE;
+    state_t state = REGISTER_GAME_PARAMETERS;
     ParametersController &parameterscontroller
-    Speeltijd speeltijd;
+    Speeltijd &speeltijd;
     DamageList<10> damagelist;
 	InitShotController &initshotcontroller;
 	Led green;
 	ReceiveIRController &receiveircontroller;
+	Timer &countdown;
+	Hitog &hitlog;
+	rtos::channel<std::array<int, 2>, 1024> HitChannel;
+	rtos::channel<std::array<int, 2>, 1024> CmdChannel;
+	rtos::channel<std::array<int, 2>, 1024> ParametersChannel;
+	rtos::flag gameover;
+	rtos::timer delay;
 
 
 public:
-
-
+	RunGameController(ParametersController &parameterscontroller, Speeltijd &speeltijd, InitShotController &initshotcontroller,
+	                  hwlib::target::pin_out &led, ReceiveIRController &receiveircontroller, Timer &countdown, HitLog &hitLog, unsigned int priority)
+	                  : rtos::task<>(priority, "RunGameController"), parameterscontroller(parameterscontroller), speeltijd(speeltijd), initshotcontroller(initshotcontroller),
+	                  green(led), receiveircontroller(receiveircontroller), countdown(countdown), hitlog(hitLog), HitChannel(this, "HitChannel"), CmdChannel(this, "CmdChannel"),
+	                  ParametersChannel(this, "ParametersChannel"), gameover(this, "gameover"), delay(this, "delay")
+	                  {
+							
+	                  }
+	                  
+	void MeldHitReceived(int PlayerID, int WeaponID)
+	{
+		std::array<int, 2> hit;
+		hit[0] = PlayerID;
+		hit[1] = WeaponID;
+		HitChannel.write(hit);
+	}
+	
+	void MeldCMDReceived(int CmdType, int Data)
+	{
+		std::array<int, 2> cmd;
+		cmd[0] = CmdType;
+		cmd[1] = Data;
+		CmdChannel.write(cmd);
+	}
+	
+	void MeldGameParameters(int PlayerID, int WeaponID)
+	{
+		std::array<int, 2> parameters;
+		parameters[0] = PlayerID;
+		parameters[1] = WeaponID;
+		ParametersChannel.writ(parameters);
+	}
+	
+	void GameOver()
+	{
+		gameover.set();
+	}
+	
 private:
 
     void main()
     {
+		int PlayerID;
+		int WeaponID;
+		int enemyID;
+		int enemyWeapon;
+		int cmd;
+		int data;
+		
         for (;;)
         {
             switch (state)
             {
-            case IDLE:
+            case REGISTER_GAME_PARAMETERS:
 				
+            	wait(ParametersChannel);
+            	std::array<int, 2> parameters = ParametersChannel.read();
+                PlayerID = parameters[0];
+                WeaponID = parameters[1];
+                state = IDLE;
                 break;
 
-            case REGISTER_GAME_PARAMETERS:
+            case IDLE:
+            	auto evt = wait(HitChannel + CmdChannel + gameover);
+            	
+            	if(evt == gameover){
+            		state = GAMEOVER;
+            		
+            	}else if(evt == HitChannel){
+            		std::array<int, 2> hit = HitChannel.read();
+            		enemyID = hit[0];
+            		enemyWeapon = hit[1];
+            		state = HIT_RECEIVED;
+            		
+            	}else if(evt == CmdChannel){
+            		std::array<int, 2> commando = CmdChannel.read();
+            		cmd = commando[0];
+            		data = commando[1];
+            		state = CMD_RECEIVER;
+            	}
+            	
                 break;
 
             case HIT_RECEIVED:
@@ -145,6 +219,10 @@ private:
             case ZOMBIE:
 
                 break;
+            
+            case GAMEOVER:
+            	
+            	break;
             }
             break;
         }
