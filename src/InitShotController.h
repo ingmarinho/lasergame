@@ -14,7 +14,7 @@ class button : public rtos::task<>
 
 private:
     std::array<ButtonListener *, maxNumberOfListeners> ButtonListeners;
-    hwlib::target::pin_in Trigger;
+    hwlib::target::pin_in &Trigger;
     unsigned int currentNumberOfListeners = 0;
 
 public:

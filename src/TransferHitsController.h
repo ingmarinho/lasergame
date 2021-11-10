@@ -8,7 +8,6 @@ struct Hit
     uint8_t weaponID
 };
 
-// template<int hitSize>
 class HitLog
 {
 

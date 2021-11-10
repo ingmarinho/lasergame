@@ -24,7 +24,7 @@ private:
     RunGameController &runGameController;
 
 public:
-    ParametersController(Toetsenbord4x4<> &keypad, RunGameController &runGameController, unsigned int priority) 
+    ParametersController(Toetsenbord4x4<1> &keypad, RunGameController &runGameController, unsigned int priority) 
     : rtos::task<>(priority, "PARAMETERS_TAAK"), KeyChannel(this, "KEY_CHANNEL"), keypad(keypad), runGameController(runGameController)
     {
         keypad.addListener(this);
