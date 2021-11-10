@@ -97,7 +97,7 @@ private:
                     hwlib::wait_ms(100);
 
                     tempScreen = screenChannel.read();
-                    if (tempScreen)
+                    if (tempScreen >= 0)
                     {
                         state = SWITCH_SCREEN;
                     }
@@ -114,7 +114,7 @@ private:
                     hwlib::wait_ms(100);
 
                     tempScreen = screenChannel.read();
-                    if (tempScreen)
+                    if (tempScreen >= 0)
                     {
                         state = SWITCH_SCREEN;
                     }

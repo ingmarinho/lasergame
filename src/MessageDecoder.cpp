@@ -37,9 +37,9 @@ bool MessageDecoder::isValidCheckSum(const uint16_t &message)
 {
     unsigned int checkBitOne = 1;
     unsigned int checkBitTwo = 6;
-    unsigned int checkBitThree = 11
+    unsigned int checkBitThree = 11;
 
-    for (unsigned int i = 0; i < 15; i++)
+    for (unsigned int i = 0; i < 5; i++)
     {
         if (((message >> checkBitThree) & 1) == (((message >> checkBitOne) & 1) ^ ((message >> checkBitTwo) & 1)))
         {
