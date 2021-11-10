@@ -1,5 +1,8 @@
 #pragma once
 
+#include "note_player_gpio.hpp"
+
+
 enum Sounds
 {
     GAMESTART,
@@ -9,33 +12,33 @@ enum Sounds
 
 };
 
-class Note
-{
-public:
-    static const int A4 = 440;
-    static const int A4s = 466;
-    static const int B4 = 494;
-    static const int C5 = 523;
-    static const int C5s = 554;
-    static const int D5 = 587;
-    static const int D5s = 622;
-    static const int E5 = 659;
-    static const int F5 = 698;
-    static const int F5s = 740;
-    static const int G5 = 784;
-    static const int G5s = 830;
-    static const int A5 = 880;
-    static const int A5s = 932;
-    static const int B5 = 987;
-
-    const int frequency;
-
-    static const int dF = 1'000'000; // full measure
-    static const int dH = dF / 2;    // half measure
-    static const int dQ = dF / 4;    // quarter measure
-
-    const int duration;
-};
+//class Note
+//{
+//public:
+//    static const int A4 = 440;
+//    static const int A4s = 466;
+//    static const int B4 = 494;
+//    static const int C5 = 523;
+//    static const int C5s = 554;
+//    static const int D5 = 587;
+//    static const int D5s = 622;
+//    static const int E5 = 659;
+//    static const int F5 = 698;
+//    static const int F5s = 740;
+//    static const int G5 = 784;
+//    static const int G5s = 830;
+//    static const int A5 = 880;
+//    static const int A5s = 932;
+//    static const int B5 = 987;
+//
+//    const int frequency;
+//
+//    static const int dF = 1'000'000; // full measure
+//    static const int dH = dF / 2;    // half measure
+//    static const int dQ = dF / 4;    // quarter measure
+//
+//    const int duration;
+//};
 
 class Speaker
 {
@@ -76,11 +79,12 @@ private:
     rtos::channel<Sounds, 1024> soundIDChannel;
 
     Speaker speaker;
+	note_player_gpio player;
     // Note note;
 
 public:
     SpeakerController(hwlib::target::pin_out &speaker1, unsigned int priority)
-        : rtos::task<>(priority, "SPEAKERCONTROLLER_TASK"), soundIDChannel(this, "SOUNDS_CHANNEL"), speaker(speaker1)
+        : rtos::task<>(priority, "SPEAKERCONTROLLER_TASK"), soundIDChannel(this, "SOUNDS_CHANNEL"), speaker(speaker1), player(speaker)
     {
     }
 
@@ -112,11 +116,10 @@ private:
 
     void hitSound()
     {
-
-        speaker.turnOn();
-        hwlib::wait_ms(500);
-        speaker.turnOff();
-        hwlib::wait_ms(500);
+//        speaker.turnOn();
+//        hwlib::wait_ms(500);
+//        speaker.turnOff();
+//        hwlib::wait_ms(500);
         // playNote(note{note::E5, note::dQ});
         // playNote(note{note::D5s, note::dQ});
         // playNote(note{note::E5, note::dQ});
@@ -126,6 +129,81 @@ private:
         // playNote(note{note::D5, note::dQ});
         // playNote(note{note::C5, note::dQ});
         // playNote(note{note::A4, note::dH});
+	
+	
+	    player.play( note{ 523, 125000 } );
+	    player.play( note{ 587, 125000 } );
+	    player.play( note{ 698, 125000 } );
+	    player.play( note{ 587, 125000 } );
+	    player.play( note{ 880, 125000 } );
+	    player.play( note{ 0, 125000 } );
+	    player.play( note{ 0, 62500 } );
+	    player.play( note{ 880, 250000 } );
+	    player.play( note{ 0, 125000 } );
+	    player.play( note{ 784, 500000 } );
+	    player.play( note{ 523, 125000 } );
+	    player.play( note{ 587, 125000 } );
+	    player.play( note{ 698, 125000 } );
+	    player.play( note{ 587, 125000 } );
+	    player.play( note{ 784, 125000 } );
+	    player.play( note{ 0, 125000 } );
+	    player.play( note{ 0, 62500 } );
+	    player.play( note{ 784, 250000 } );
+	    player.play( note{ 0, 125000 } );
+	    player.play( note{ 698, 250000 } );
+	    player.play( note{ 659, 125000 } );
+	    player.play( note{ 587, 250000 } );
+	    player.play( note{ 523, 125000 } );
+	    player.play( note{ 587, 125000 } );
+	    player.play( note{ 698, 125000 } );
+	    player.play( note{ 587, 125000 } );
+	    player.play( note{ 698, 500000 } );
+	    player.play( note{ 784, 250000 } );
+	    player.play( note{ 659, 250000 } );
+	    player.play( note{ 587, 125000 } );
+	    player.play( note{ 523, 250000 } );
+	    player.play( note{ 261, 250000 } );
+	    player.play( note{ 523, 250000 } );
+	    player.play( note{ 784, 250000 } );
+	    player.play( note{ 0, 250000 } );
+	    player.play( note{ 698, 1000000 } );
+	    player.play( note{ 523, 125000 } );
+	    player.play( note{ 587, 125000 } );
+	    player.play( note{ 698, 125000 } );
+	    player.play( note{ 587, 125000 } );
+	    player.play( note{ 880, 125000 } );
+	    player.play( note{ 0, 125000 } );
+	    player.play( note{ 0, 62500 } );
+	    player.play( note{ 880, 250000 } );
+	    player.play( note{ 0, 125000 } );
+	    player.play( note{ 784, 500000 } );
+	    player.play( note{ 523, 125000 } );
+	    player.play( note{ 587, 125000 } );
+	    player.play( note{ 698, 125000 } );
+	    player.play( note{ 587, 125000 } );
+	    player.play( note{ 1046, 500000 } );
+	    player.play( note{ 659, 250000 } );
+	    player.play( note{ 698, 250000 } );
+	    player.play( note{ 659, 125000 } );
+	    player.play( note{ 587, 250000 } );
+	    player.play( note{ 523, 125000 } );
+	    player.play( note{ 587, 125000 } );
+	    player.play( note{ 698, 125000 } );
+	    player.play( note{ 587, 125000 } );
+	    player.play( note{ 698, 500000 } );
+	    player.play( note{ 784, 250000 } );
+	    player.play( note{ 659, 250000 } );
+	    player.play( note{ 587, 125000 } );
+	    player.play( note{ 523, 250000 } );
+	    player.play( note{ 261, 250000 } );
+	    player.play( note{ 523, 250000 } );
+	    player.play( note{ 784, 250000 } );
+	    player.play( note{ 0, 250000 } );
+	    player.play( note{ 698, 1000000 } );
+        
+        
+        
+        
     }
 
     void shoot()
@@ -140,14 +218,17 @@ private:
             switch (state)
             {
             case IDLE:
-                wait(soundIDChannel);
-
-                soundID = soundIDChannel.read();
-
-                if (soundID)
-                {
-                    state = PLAY_SOUND;
-                }
+            	
+            	hitSound();
+            	
+//                wait(soundIDChannel);
+//
+//                soundID = soundIDChannel.read();
+//
+//                if (soundID)
+//                {
+//                    state = PLAY_SOUND;
+//                }
 
                 break;
 
