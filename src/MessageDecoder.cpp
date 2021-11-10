@@ -128,4 +128,4 @@ void MessageDecoder::main()
             break;
         }
     }
-}
+};

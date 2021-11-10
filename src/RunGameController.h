@@ -20,10 +20,10 @@ class DamageList
 private:
 	struct info
 	{
-		char *WeaponName;
+		const char *WeaponName;
 		int damage;
 		int delay;
-		info(char *WeaponName, int damage, int delay) : WeaponName(WeaponName), damage(damage), delay(delay) {}
+		info(const char *WeaponName, int damage, int delay) : WeaponName(WeaponName), damage(damage), delay(delay) {}
 	};
 
 	std::array<info, maxNumberOfWeapons> Weapons;
@@ -111,14 +111,14 @@ class RunGameController : public rtos::task<>
 
 private:
 	state_t state = REGISTER_GAME_PARAMETERS;
-	ParametersController &parameterscontroller
+	ParametersController &parameterscontroller;
 		Speeltijd &speeltijd;
 	DamageList<10> damagelist;
 	InitShotController &initshotcontroller;
 	Led green;
 	ReceiveIRController &receiveircontroller;
 	Timer &countdown;
-	Hitog &hitlog;
+	HitLog &hitlog;
 	rtos::channel<std::array<int, 2>, 1024> HitChannel;
 	rtos::channel<std::array<int, 2>, 1024> CmdChannel;
 	rtos::channel<std::array<int, 2>, 1024> ParametersChannel;
@@ -173,7 +173,7 @@ public:
 	RunGameController(ParametersController &parameterscontroller, Speeltijd &speeltijd, InitShotController &initshotcontroller,
 					  hwlib::target::pin_out &led, ReceiveIRController &receiveircontroller, Timer &countdown, HitLog &hitLog, unsigned int priority)
 		: rtos::task<>(priority, "RunGameController"), parameterscontroller(parameterscontroller), speeltijd(speeltijd), initshotcontroller(initshotcontroller),
-		  green(led), receiveircontroller(receiveircontroller), countdown(countdown), hitlog(hitLog), HitChannel(this, "HitChannel"), CmdChannel(this, "CmdChannel"),
+		  green(led), receiveircontroller(receiveircontroller), countdown(countdown), HitLog(hitLog), HitChannel(this, "HitChannel"), CmdChannel(this, "CmdChannel"),
 		  ParametersChannel(this, "ParametersChannel"), gameover(this, "gameover"), delay(this, "delay")
 	{
 	}
@@ -199,7 +199,7 @@ public:
 		std::array<int, 2> parameters;
 		parameters[0] = PlayerID;
 		parameters[1] = WeaponID;
-		ParametersChannel.writ(parameters);
+		ParametersChannel.write(parameters);
 	}
 
 	void GameOver()
@@ -222,15 +222,16 @@ private:
 			switch (state)
 			{
 			case REGISTER_GAME_PARAMETERS:
-
+            {
 				wait(ParametersChannel);
 				std::array<int, 2> parameters = ParametersChannel.read();
 				PlayerID = parameters[0];
 				WeaponID = parameters[1];
 				state = IDLE;
 				break;
-
+            }
 			case IDLE:
+            {
 				auto evt = wait(HitChannel + CmdChannel + gameover);
 
 				if (evt == gameover)
@@ -253,30 +254,33 @@ private:
 				}
 
 				break;
-
+            }
 			case HIT_RECEIVED:
-				hitlog.meldHit(enemyID, enemyWeapon);
-				hp -= damagelist.GetDamage();
-				initshotcontroller.Zombie();
+            {
+				HitLog.meldHit(enemyID, enemyWeapon);
+				hp -= damagelist.GetDamage(WeaponID);
+				initshotcontroller.zombieFlag();
 				state = ZOMBIE;
 
 				break;
-
+            }
 			case CMD_RECEIVER:
+            {
 				if (cmd == 10)
 				{
-					speeltijd.SetGameTIme(data);
-					state = IDLE
+					speeltijd.SetGameTime(data);
+					state = IDLE;
 				}
 				else if (cmd == 11)
 				{
 					state = WAIT_COUNTDOWN;
 				}
 				break;
-
+            }
 			case WAIT_COUNTDOWN:
+            {
 
-				while (data ! < 0)
+				while (data >= 0)
 				{
 					// laat countdown zien!!!!!!!!!!!!!!
 					delay.set(1'000'000);
@@ -291,12 +295,12 @@ private:
 				c |= masker;
 				checksum(c);
 				initshotcontroller.StartGame(c, d);
-				countdown.StartTimer();
+				countdown.startTimer();
 				state = IDLE;
 				break;
-
+            }
 			case ZOMBIE:
-
+            {
 				delay.set(2'000'000);
 
 				for (;;)
@@ -315,7 +319,7 @@ private:
 				}
 
 				break;
-
+            }
 			case GAMEOVER:
 				// Display Game Over!!!!!!!
 				break;
