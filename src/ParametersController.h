@@ -78,6 +78,7 @@ private:
 
             case GAME_IS_RUNNING:
 
+                RunGameController.MeldGameParameters(PlayerID, WeaponID);
 
                 break;
             }

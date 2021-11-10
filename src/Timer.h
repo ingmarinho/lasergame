@@ -21,7 +21,7 @@ private:
     int gametime = speeltijd;
 
 public:
-    ParametersController(display(display), unsigned int priority) : rtos::task<>(priority, "TIMER_TAAK"), delay(this, 'delay')
+    Timer(display(display), unsigned int priority) : rtos::task<>(priority, "TIMER_TAAK"), delay(this, 'delay')
     {
     }
 
@@ -35,7 +35,7 @@ private:
             switch (state)
             {
                 case STARTGAME:
-                    wait(startFlag);
+                    wait(StartFlag);
                     state = IDLE;
                     break;
 
