@@ -32,6 +32,7 @@ bool MessageDecoder::createMessage(uint16_t &message, int &pause)
     return true;
 }
 
+
 bool MessageDecoder::isValidCheckSum(const uint16_t &message)
 {
     unsigned int checkBitOne = 1;
@@ -54,6 +55,7 @@ bool MessageDecoder::isValidCheckSum(const uint16_t &message)
     return true;
 }
 
+/// decodes bits from IR receiver to uint16 and communicates to ReceiveIRController
 void MessageDecoder::main()
 {
     int pause;

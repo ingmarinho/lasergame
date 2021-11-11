@@ -1,9 +1,10 @@
 #pragma once
 
+/// IR led which sends IR signals
 class Led
 {
 private:
-	hwlib::target::pin_out &led;
+	hwlib::target::pin_out &led; /// pin connected to IR led
 
 public:
 	Led(hwlib::target::pin_out &led)
@@ -11,12 +12,14 @@ public:
 	{
 	}
 
+	/// turn on the led
 	void turnOn()
 	{
 		led.write(1);
 		led.flush();
 	}
 
+	/// turn off the led
 	void turnOff()
 	{
 		led.write(0);
@@ -24,10 +27,11 @@ public:
 	}
 };
 
+/// transmit the IR messages via IR led
 class IRTransmitter
 {
 private:
-	hwlib::target::d2_36kHz &IR;
+	hwlib::target::d2_36kHz &IR; /// pin connected to IR led
 
 public:
 	IRTransmitter(hwlib::target::d2_36kHz &IR)
@@ -35,12 +39,14 @@ public:
 	{
 	}
 
+	/// turn on IR transmitter
 	void turnOn()
 	{
 		IR.write(1);
 		IR.flush();
 	}
 
+	/// turn off IR transmitter
 	void turnOff()
 	{
 		IR.write(0);
@@ -48,6 +54,7 @@ public:
 	}
 };
 
+/// send bits via IR transmitter
 class SendIRController : public rtos::task<2000>
 {
 	enum state_t
@@ -70,14 +77,14 @@ class SendIRController : public rtos::task<2000>
 private:
 	state_t state = IDLE;
 	state_s stateS = GETBIT;
-	rtos::timer delay;
-	rtos::channel<uint16_t, 1024> sendChannel;
-	IRTransmitter IR;
-	Led led;
+	rtos::timer delay; /// timer for delay
+	rtos::channel<uint16_t, 1024> sendChannel; /// channel for the messages to be send
+	IRTransmitter IR; /// IR transmitter
+	Led led; /// /IR led
 
-	int sendcounter = 0;
-	int current = 0;
-	uint16_t message = 0x0;
+	int sendcounter = 0; /// integer to count the number of sends
+	int current = 0; /// integer to specify the current message
+	uint16_t message = 0x0; /// the message to be send
 
 public:
 	SendIRController(hwlib::target::d2_36kHz &IR, hwlib::target::pin_out &led, unsigned int priority)
@@ -85,6 +92,7 @@ public:
 	{
 	}
 
+	/// send the message
 	void sendMessage(uint16_t message)
 	{
 		sendChannel.write(message);

@@ -11,15 +11,16 @@ void ReceiveIRController::sendMessage(const uint16_t &message)
     messageChannel.write(message);
 }
 
+/// decodes message from message decoder to command or hit and communicates to rungamecontroller
 void ReceiveIRController::main()
 {
-    uint16_t message;
-    uint16_t mask;
-    int cmdType;
-    int data;
-    uint16_t playerID;
-    uint16_t weaponID;
-    uint16_t res;
+    uint16_t message; /// message to be received
+    uint16_t mask; /// mask to get specific bits from message
+    int cmdType; /// specifies type of commando
+    int data; /// specifies data of commando or weapon type
+    uint16_t playerID; /// player number
+    uint16_t weaponID; /// weapon type
+    uint16_t res; /// result after mask has been used on the message
 
     for (;;)
     {            

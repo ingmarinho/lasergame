@@ -13,6 +13,7 @@ enum Sounds
 
 };
 
+/// specify all music notes with frequencies
 class note
 {
 public:
@@ -35,17 +36,18 @@ public:
 
     const int frequency;
 
-    static const int dF = 1'000'000; // full measure
-    static const int dH = dF / 2;    // half measure
-    static const int dQ = dF / 4;    // quarter measure
+    static const int dF = 1'000'000; /// full measure note
+    static const int dH = dF / 2;    /// half measure note
+    static const int dQ = dF / 4;    /// quarter measure note
 
     const int duration;
 };
 
+/// turns the speaker on and off
 class Speaker
 {
 private:
-    hwlib::target::pin_out &speaker;
+    hwlib::target::pin_out &speaker; /// pin connected to speaker
 
 public:
     Speaker(hwlib::target::pin_out &speaker)
@@ -53,21 +55,26 @@ public:
     {
     }
 
+    /// turns on the speaker
     void turnOn()
     {
         speaker.write(1);
         speaker.flush();
     }
+
+    /// turns off the speaker
     void turnOff()
     {
         speaker.write(0);
         speaker.flush();
     }
 };
+
+/// plays the notes with the speaker
 class note_player_gpio
 {
 private:
-    Speaker &lsp;
+    Speaker &lsp; /// speaker
 
 public:
     note_player_gpio(Speaker &lsp) : lsp(lsp)
@@ -95,6 +102,7 @@ public:
     }
 };
 
+/// uses the note player and speaker to play sounds
 class SpeakerController : public rtos::task<2000>
 {
 
@@ -106,12 +114,12 @@ class SpeakerController : public rtos::task<2000>
 
 private:
     state_t state = IDLE;
-    Sounds soundID;
+    Sounds soundID; /// the type of sound to be played
 
-    rtos::channel<Sounds, 1024> soundIDChannel;
+    rtos::channel<Sounds, 1024> soundIDChannel; /// channel for all the sounds to be played
 
-    Speaker speaker;
-    note_player_gpio player;
+    Speaker speaker; /// speaker
+    note_player_gpio player; /// note player
     // Note note;
 
 public:

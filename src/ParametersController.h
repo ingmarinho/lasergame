@@ -3,6 +3,7 @@
 #include "Toetsenbord4x4.hpp"
 #include "RunGameController.h"
 
+/// initialize player number and weapon type and communicate to rungamecontroller
 class ParametersController : public rtos::task<2000>, public KeyPadListener
 {
 
@@ -18,7 +19,7 @@ class ParametersController : public rtos::task<2000>, public KeyPadListener
 private:
     state_t state = IDLE;
 
-    rtos::channel<char, 1024> KeyChannel;
+    rtos::channel<char, 1024> KeyChannel; /// channel for the keys that have been pressed
     Toetsenbord4x4<1> &keypad;
     RunGameController &runGameController;
 
@@ -35,10 +36,10 @@ public:
     }
 
 private:
-    int PlayerID;
-    int WeaponID;
-    bool PlayerNumber = false;
-    bool WeaponNumber = false;
+    int PlayerID; /// player number
+    int WeaponID; /// weapon type
+    bool PlayerNumber = false; /// bool to check if player number has been specified yet
+    bool WeaponNumber = false; /// bool to check if weapon type has been specified yet
 
     void main()
     {

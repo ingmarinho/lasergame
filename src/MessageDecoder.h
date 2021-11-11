@@ -4,7 +4,7 @@
 #include "ReceiveIRController.h"
 
 class ReceiveIRController;
-
+///
 class MessageDecoder : public rtos::task<2000>, public IRReceiverListener
 {
 
@@ -17,7 +17,7 @@ class MessageDecoder : public rtos::task<2000>, public IRReceiverListener
 private:
     state_t state = IDLE;
 
-    rtos::channel<int, 1024> pausesChannel;
+    rtos::channel<int, 1024> pausesChannel; /// channel for pauses in IR
     IRReceiver<1> &irReceiver;
     ReceiveIRController &receiveIRController;
 
