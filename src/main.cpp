@@ -18,18 +18,18 @@ int main()
 {
   // logger
   auto dumpButton = hwlib::target::pin_in(hwlib::target::pins::d10);
-  Logger logger(dumpButton, 0);
+  Logger logger(dumpButton, 13);
 
   // RunGameController &runGameController;
 
   //  sendircontroller
   auto IR = hwlib::target::d2_36kHz();
   auto red = hwlib::target::pin_out(hwlib::target::pins::d42);
-  SendIRController sendIRcontroller(IR, red, 8);
+  SendIRController sendIRcontroller(IR, red, 1);
 
   // speakercontroller
   auto speaker = hwlib::target::pin_out(hwlib::target::pins::d12);
-  SpeakerController speakerController(speaker, 6);
+  SpeakerController speakerController(speaker, 10);
 
   auto out0 = hwlib::target::pin_oc(hwlib::target::pins::a0);
   auto out1 = hwlib::target::pin_oc(hwlib::target::pins::a1);
@@ -46,9 +46,9 @@ int main()
   auto matrix = hwlib::matrix_of_switches(out_port, in_port);
   auto keypad = hwlib::keypad<16>(matrix, "123A456B789C*0#D");
 
-  Toetsenbord4x4<1> Toetsenbord(keypad, 3);
+  Toetsenbord4x4<1> Toetsenbord(keypad, 9);
 
-  InitGameController IGC(Toetsenbord, 2, sendIRcontroller);
+  InitGameController IGC(Toetsenbord, 8, sendIRcontroller);
 
   // // oleddisplay
   auto scl = hwlib::target::pin_oc(hwlib::target::pins::scl);
@@ -60,33 +60,33 @@ int main()
   auto display8x8 = hwlib::terminal_from(oled, font8x8);
   auto display16x16 = hwlib::terminal_from(oled, font16x16);
 
-  OledDisplay oledDisplay(display8x8, display16x16, 1);
+  OledDisplay oledDisplay(display8x8, display16x16, 11);
 
   // testing IR
-  SendTest sendTest(sendIRcontroller, speakerController, oledDisplay, 4);
+  SendTest sendTest(sendIRcontroller, speakerController, oledDisplay, 12);
 
   //  rungamecontroller
 
   Speeltijd speeltijd;
   auto rungameled = hwlib::target::pin_out(hwlib::target::pins::d7);
 
-  Timer countdown(oledDisplay, speeltijd, 2);
+  Timer countdown(oledDisplay, speeltijd, 6);
 
-  // std::array<Hit, 400> &hitLog;
-  // HitLog hitLog;
+
+  HitLog hitLog;
 
   auto trigger = hwlib::target::pin_in(hwlib::target::pins::d43);
-  InitShotController initShotController(trigger, sendIRcontroller, 10, 11);
+  InitShotController initShotController(trigger, sendIRcontroller, 3, 7);
 
   auto runGameLED = hwlib::target::pin_out(hwlib::target::pins::d45);
-  RunGameController runGameController(speeltijd, initShotController, runGameLED, countdown, hitLog, 4);
+  RunGameController runGameController(speeltijd, initShotController, runGameLED, countdown, hitLog, 2);
 
-  ReceiveIRController receiveIRcontroller(runGameController, 1); // priority MessageDecoder, priority IRReceiver
+  ReceiveIRController receiveIRcontroller(runGameController, 5); // priority MessageDecoder, priority IRReceiver
 
   // messagedecoder
   auto tsopSignal = hwlib::target::pin_in(hwlib::target::pins::d8);
   auto led = hwlib::target::pin_out(hwlib::target::pins::d9);
-  MessageDecoder messageDecoder(tsopSignal, led, receiveIRcontroller, 5, 9);
+  MessageDecoder messageDecoder(tsopSignal, led, receiveIRcontroller, 4, 0);
 
   rtos::run();
 }

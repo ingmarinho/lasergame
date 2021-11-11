@@ -75,7 +75,7 @@ private:
 
                 displayScreen = screenChannel.read();
 
-                if (displayScreen)
+                if (displayScreen >= 0)
                 {
                     state = DISPLAYING;
                 }
@@ -97,12 +97,7 @@ private:
                         << hwlib::flush;
                     hwlib::wait_ms(100);
 
-                    tempScreen = screenChannel.read();
-                    if (tempScreen)
-                    {
-                        state = SWITCH_SCREEN;
-                    }
-
+                    state = IDLE;
                     break;
 
                 case PLAYER_ALIVE:
@@ -114,11 +109,7 @@ private:
                         << hwlib::flush;
                     hwlib::wait_ms(100);
 
-                    tempScreen = screenChannel.read();
-                    if (tempScreen)
-                    {
-                        state = SWITCH_SCREEN;
-                    }
+                    state = IDLE
                     break;
 
                 case PLAYER_DEAD:

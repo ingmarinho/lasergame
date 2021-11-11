@@ -51,6 +51,7 @@ public:
         {
             return Weapons[i].damage;
         }
+        return 0;
     }
 
     int GetDelay(unsigned int i)
@@ -59,5 +60,6 @@ public:
         {
             return Weapons[i].delay;
         }
+        return 0;
     }
 };
