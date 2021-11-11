@@ -1,4 +1,4 @@
-#pragma once 
+#pragma once
 #include <array>
 
 struct Hit
@@ -6,8 +6,13 @@ struct Hit
     uint8_t playerID;
     uint8_t weaponID;
     Hit(uint8_t PlayerID, uint8_t WeaponID)
-    :   playerID(PlayerID), weaponID(WeaponID)
-    {}
+        : playerID(PlayerID), weaponID(WeaponID)
+    {
+    }
+    Hit()
+        : Hit(0, 0)
+    {
+    }
 };
 
 class HitLog
