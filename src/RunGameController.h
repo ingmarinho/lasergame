@@ -31,9 +31,10 @@ class RunGameController : public rtos::task<2000>
 
 private:
     state_t state = REGISTER_GAME_PARAMETERS;
+    OledDisplay &oledDisplay;
     Speeltijd &speeltijd;
     DamageList<10> damagelist;
-    // 
+    //
     // ReceiveIRController receiveIRcontroller;
     //
     InitShotController &initshotcontroller;
@@ -91,9 +92,9 @@ private:
 public:
     // nog scherm en speaker controller toevoegen.
 
-    RunGameController(Speeltijd &speeltijd, InitShotController &initshotcontroller,
+    RunGameController(OledDisplay &oledDisplay, Speeltijd &speeltijd, InitShotController &initshotcontroller,
                       hwlib::target::pin_out &led, Timer &countdown, HitLog &hitLog, unsigned int priority)
-        : rtos::task<2000>(priority, "RunGameController"), speeltijd(speeltijd), initshotcontroller(initshotcontroller),
+        : rtos::task<2000>(priority, "RunGameController"), oledDisplay(oledDisplay), speeltijd(speeltijd), initshotcontroller(initshotcontroller),
           green(led), countdown(countdown), hitLog(hitLog), HitChannel(this, "HitChannel"), CmdChannel(this, "CmdChannel"),
           ParametersChannel(this, "ParametersChannel"), gameover(this, "gameover"), delay(this, "delay")
     {
@@ -144,6 +145,7 @@ private:
             {
             case REGISTER_GAME_PARAMETERS:
             {
+                oledDisplay.showGameStart();
                 wait(ParametersChannel);
                 std::array<int, 2> parameters = ParametersChannel.read();
                 PlayerID = parameters[0];
@@ -153,6 +155,8 @@ private:
             }
             case IDLE:
             {
+                oledDisplay.showPlayerAlive(PlayerID, hp, damagelist.GetName(WeaponID));
+
                 auto evt = wait(HitChannel + CmdChannel + gameover);
 
                 if (evt == gameover)
@@ -180,6 +184,16 @@ private:
             {
                 hitLog.meldHit(enemyID, enemyWeapon);
                 hp -= damagelist.GetDamage(WeaponID);
+                if (hp <= 0)
+                {
+                    state = GAMEOVER;
+                    oledDisplay.showPlayerDead();
+                    hwlib::wait_ms(3000);
+                    break;
+                }
+
+                oledDisplay.showHit();
+
                 initshotcontroller.zombieFlag();
                 state = ZOMBIE;
 
@@ -203,7 +217,7 @@ private:
 
                 while (data >= 0)
                 {
-                    // laat countdown zien!!!!!!!!!!!!!!
+                    oledDisplay.showCountdown(data);
                     delay.set(1'000'000);
                     wait(delay);
                     data--;
@@ -222,6 +236,7 @@ private:
             }
             case ZOMBIE:
             {
+                oledDisplay.showZombieMode();
                 delay.set(2'000'000);
 
                 for (;;)
@@ -242,7 +257,8 @@ private:
                 break;
             }
             case GAMEOVER:
-                // Display Game Over!!!!!!!
+                oledDisplay.showGameEnd();
+                hwlib::wait_ms(200);
                 break;
             }
             break;

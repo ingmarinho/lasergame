@@ -37,10 +37,11 @@ public:
             // sendIRController.sendMessage(message4);
 
             // speakerController.addSound(HITSOUND);
+            // hwlib::wait_ms(2000);
+            oledDisplay.showPlayerDead();
             hwlib::wait_ms(2000);
-            oledDisplay.showDisplayScreen(GAME_START);
-            hwlib::wait_ms(2000);
-            oledDisplay.showDisplayScreen(PLAYER_ALIVE);
+            hwlib::cout << "sending\n";
+            // oledDisplay.showDisplayScreen(PLAYER_ALIVE);
 
 
             // hwlib::wait_ms(2000);

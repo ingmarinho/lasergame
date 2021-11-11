@@ -37,12 +37,13 @@ public:
         Weapons[9] = Weapon9;
     }
 
-    const char *GetName(int i)
+    const char *GetName(unsigned int i)
     {
         if (i < maxNumberOfWeapons)
         {
-            return Weapons[i].WeaponName;
+            return Weapons[i].weaponName;
         }
+        return "";
     }
 
     int GetDamage(unsigned int i)

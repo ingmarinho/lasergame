@@ -62,11 +62,10 @@ int main()
   auto display8x8 = hwlib::terminal_from(oled, font8x8);
   auto display16x16 = hwlib::terminal_from(oled, font16x16);
 
-  OledDisplay oledDisplay(display8x8, display16x16, 11);
+  OledDisplay oledDisplay(display8x8, display16x16);
 
   // testing IR
   // SendTest sendTest(sendIRcontroller, speakerController, oledDisplay, 12);
-
   //  rungamecontroller
 
   Speeltijd speeltijd;
@@ -81,7 +80,7 @@ int main()
   InitShotController initShotController(trigger, sendIRcontroller, 3, 7);
 
   auto runGameLED = hwlib::target::pin_out(hwlib::target::pins::d45);
-  RunGameController runGameController(speeltijd, initShotController, runGameLED, countdown, hitLog, 2);
+  RunGameController runGameController(oledDisplay, speeltijd, initShotController, runGameLED, countdown, hitLog, 2);
 
   ReceiveIRController receiveIRcontroller(runGameController, 5); // priority MessageDecoder, priority IRReceiver
 

@@ -53,10 +53,6 @@ private:
 
 		for (;;)
 		{
-			hwlib::cout << "test\n"; 
-			hwlib::wait_ms(200);
-			continue;
-
 			switch (state)
 			{
 			case IDLE:

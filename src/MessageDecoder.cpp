@@ -26,7 +26,6 @@ bool MessageDecoder::createMessage(uint16_t &message, int &pause)
 
         else if (pause > 3500 && pause < 5000)
         {
-            hwlib::cout << "error\n";
             return false;
         }
     }
@@ -119,6 +118,7 @@ void MessageDecoder::main()
 
             if (firstMessage == secondMessage)
             {
+                hwlib::cout << "got start singal\n";
                 receiveIRController.sendMessage(firstMessage);
             }
 
