@@ -5,7 +5,7 @@
 
 class ReceiveIRController;
 
-class MessageDecoder : public rtos::task<>, public IRReceiverListener
+class MessageDecoder : public rtos::task<2000>, public IRReceiverListener
 {
 
     enum state_t
@@ -18,11 +18,11 @@ private:
     state_t state = IDLE;
 
     rtos::channel<int, 1024> pausesChannel;
-    IRReceiver<1> irReceiver;
+    IRReceiver<1> &irReceiver;
     ReceiveIRController &receiveIRController;
 
 public:
-    MessageDecoder(hwlib::target::pin_in &tsopSignal, hwlib::target::pin_out &led, ReceiveIRController &receiveIRController, unsigned int MessageDecoderPriority, unsigned int IRReceiverPriority);
+    MessageDecoder(IRReceiver<1> &irReceiver, ReceiveIRController &receiveIRController, unsigned int priority);
     void pauseDetected(int pause) override;
 private:
     bool createMessage(uint16_t &message, int &pause);

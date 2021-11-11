@@ -6,7 +6,7 @@
 
 //class RunGameController
 
-class Timer : public rtos::task<>
+class Timer : public rtos::task<1500>
 {
 
     enum state_t
@@ -28,7 +28,7 @@ private:
 
 public:
     Timer(OledDisplay& oledDisplay, Speeltijd &speeltijd, unsigned int priority) 
-    : rtos::task<>(priority, "TIMER_TAAK"), StartFlag(this, "START_FLAG"), StopFlag(this, "STOP_FLAG"), delay(this, "DELAY"), oledDisplay(oledDisplay), speeltijd(speeltijd)
+    : rtos::task<1500>(priority, "TIMER_TAAK"), StartFlag(this, "START_FLAG"), StopFlag(this, "STOP_FLAG"), delay(this, "DELAY"), oledDisplay(oledDisplay), speeltijd(speeltijd)
     {
         gametime = speeltijd.GetGameTime();
     }

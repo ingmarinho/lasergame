@@ -48,7 +48,7 @@ public:
 	}
 };
 
-class SendIRController : public rtos::task<>
+class SendIRController : public rtos::task<2000>
 {
 	enum state_t
 	{
@@ -81,7 +81,7 @@ private:
 
 public:
 	SendIRController(hwlib::target::d2_36kHz &IR, hwlib::target::pin_out &led, unsigned int priority)
-		: rtos::task<>(priority, "SENDIRCONTROLLER_TASK"), delay(this, "delay"), sendChannel(this, "SEND_CHANNEL"), IR(IR), led(led)
+		: rtos::task<2000>(priority, "SENDIRCONTROLLER_TASK"), delay(this, "delay"), sendChannel(this, "SEND_CHANNEL"), IR(IR), led(led)
 	{
 	}
 
@@ -98,6 +98,7 @@ private:
 
 		for (;;)
 		{
+
 			switch (state)
 			{
 			case IDLE:

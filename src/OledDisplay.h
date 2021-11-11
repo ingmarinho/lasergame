@@ -8,7 +8,7 @@ enum displayScreens
     GAME_END
 };
 
-class OledDisplay : public rtos::task<>
+class OledDisplay : public rtos::task<2000>
 {
     enum state_t
     {
@@ -31,7 +31,7 @@ private:
 
 public:
     OledDisplay(hwlib::terminal_from &display8x8, hwlib::terminal_from &display16x16, unsigned int priority)
-        : rtos::task<>(priority, "OLEDDISPLAY_TASK"), screenChannel(this, "SCREEN_CHANNEL"), display8x8(display8x8), display16x16(display16x16)
+        : rtos::task<2000>(priority, "OLEDDISPLAY_TASK"), screenChannel(this, "SCREEN_CHANNEL"), display8x8(display8x8), display16x16(display16x16)
     {
     }
 
@@ -91,6 +91,7 @@ private:
                 switch (displayScreen)
                 {
                 case GAME_START:
+                    hwlib::cout << "test1\n";
                     display8x8
                         << "\f"
                         << "\n\nWaiting for game start.."
@@ -101,6 +102,7 @@ private:
                     break;
 
                 case PLAYER_ALIVE:
+                hwlib::cout << "test2\n";
                     display8x8
                         << "\f"
                         << "Player: " << playerID << "\n"
@@ -109,7 +111,7 @@ private:
                         << hwlib::flush;
                     hwlib::wait_ms(100);
 
-                    state = IDLE
+                    state = IDLE;
                     break;
 
                 case PLAYER_DEAD:

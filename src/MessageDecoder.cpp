@@ -1,8 +1,8 @@
 #include "MessageDecoder.h"
 
 
-MessageDecoder::MessageDecoder(hwlib::target::pin_in &tsopSignal, hwlib::target::pin_out &led, ReceiveIRController &receiveIRController, unsigned int MessageDecoderPriority, unsigned int IRReceiverPriority)
-    : rtos::task<>(MessageDecoderPriority, "MESSAGEDECODER_TASK"), pausesChannel(this, "PAUSE_CHANNEL"), irReceiver(tsopSignal, led, IRReceiverPriority), receiveIRController(receiveIRController)
+MessageDecoder::MessageDecoder(IRReceiver<1> &irReceiver, ReceiveIRController &receiveIRController, unsigned int priority)
+    : rtos::task<2000>(priority, "MESSAGEDECODER_TASK"), pausesChannel(this, "PAUSE_CHANNEL"), irReceiver(irReceiver), receiveIRController(receiveIRController)
 {
     irReceiver.addListener(this);
 }
@@ -67,7 +67,6 @@ void MessageDecoder::main()
         switch (state)
         {
         case IDLE:
-
             wait(pausesChannel);
 
             pause = pausesChannel.read();
@@ -76,7 +75,7 @@ void MessageDecoder::main()
             {
                 state = MESSAGE;
             }
-
+            hwlib::wait_ms(200);
             break;
 
         case MESSAGE:

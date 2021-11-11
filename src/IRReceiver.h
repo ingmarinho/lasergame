@@ -11,7 +11,7 @@ public:
 };
 
 template <unsigned int maxNumberOfListeners>
-class IRReceiver : public rtos::task<>
+class IRReceiver : public rtos::task<1500>
 {
 	enum state_t
 	{
@@ -31,7 +31,7 @@ private:
 
 public:
 	IRReceiver(hwlib::target::pin_in &tsopSignal, hwlib::target::pin_out &led, unsigned int priority)
-		: rtos::task<>(priority, "IRRECEIVER_TASK"), mainClock(this, 100 * rtos::us, "IRRECEIVER_CLOCK"), tsopSignal(tsopSignal), led(led)
+		: rtos::task<1500>(priority, "IRRECEIVER_TASK"), mainClock(this, 100 * rtos::us, "IRRECEIVER_CLOCK"), tsopSignal(tsopSignal), led(led)
 	{
 	}
 
@@ -49,7 +49,7 @@ private:
 	{
 
 		int n = 0;
-		bool IRSignal = tsopSignal.read();
+		bool IRSignal;
 
 		for (;;)
 		{

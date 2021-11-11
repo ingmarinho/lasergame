@@ -16,7 +16,7 @@
 #include "Speeltijd.h"
 #include "DamageList.h"
 
-class RunGameController : public rtos::task<>
+class RunGameController : public rtos::task<2000>
 {
     enum state_t
     {
@@ -93,7 +93,7 @@ public:
 
     RunGameController(Speeltijd &speeltijd, InitShotController &initshotcontroller,
                       hwlib::target::pin_out &led, Timer &countdown, HitLog &hitLog, unsigned int priority)
-        : rtos::task<>(priority, "RunGameController"), speeltijd(speeltijd), initshotcontroller(initshotcontroller),
+        : rtos::task<2000>(priority, "RunGameController"), speeltijd(speeltijd), initshotcontroller(initshotcontroller),
           green(led), countdown(countdown), hitLog(hitLog), HitChannel(this, "HitChannel"), CmdChannel(this, "CmdChannel"),
           ParametersChannel(this, "ParametersChannel"), gameover(this, "gameover"), delay(this, "delay")
     {

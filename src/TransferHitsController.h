@@ -10,7 +10,7 @@
 // }
 
 template<int playerAmount>
-class TransferHitsController : public rtos::task<>
+class TransferHitsController : public rtos::task<2000>
 {
     enum state_t
     {
@@ -28,17 +28,19 @@ private:
 
 public:
     TransferHitsController(HitLog &hitLog, unsigned int priority)
-        : rtos::task<>(priority, "TRANSFERHITSCONTROLLER_TASK"), TransferHitsFlag(this, "TRANSFERHITS_FLAG"), hitLog(hitLog)
+        : rtos::task<2000>(priority, "TRANSFERHITSCONTROLLER_TASK"), TransferHitsFlag(this, "TRANSFERHITS_FLAG"), hitLog(hitLog)
     {
         
     }
 
 private:
-    void sortData(std::array<Hit ,400> hits)
+    void printData(std::array<Hit ,400> &hits)
     {
         for (auto &hit : hits)
         {
             // if (hit.playerID == )
+            hwlib::cout << hit.playerID << hwlib::endl;
+            hwlib::cout << hit.weaponID << hwlib::endl;
         }
     }
 
@@ -58,8 +60,9 @@ private:
             case TRANSFERHITS:
 
                 std::array data = hitLog.getData();
+                printData(data);
 
-
+                state = IDLE;
 
                 break;
             }

@@ -95,7 +95,7 @@ public:
     }
 };
 
-class SpeakerController : public rtos::task<>
+class SpeakerController : public rtos::task<2000>
 {
 
     enum state_t
@@ -116,7 +116,7 @@ private:
 
 public:
     SpeakerController(hwlib::target::pin_out &speaker1, unsigned int priority)
-        : rtos::task<>(priority, "SPEAKERCONTROLLER_TASK"), soundIDChannel(this, "SOUNDS_CHANNEL"), speaker(speaker1), player(speaker)
+        : rtos::task<2000>(priority, "SPEAKERCONTROLLER_TASK"), soundIDChannel(this, "SOUNDS_CHANNEL"), speaker(speaker1), player(speaker)
     {
     }
 

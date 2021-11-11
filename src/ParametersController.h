@@ -3,9 +3,7 @@
 #include "Toetsenbord4x4.hpp"
 #include "RunGameController.h"
 
-
-
-class ParametersController : public rtos::task<>
+class ParametersController : public rtos::task<2000>, public KeyPadListener
 {
 
     enum state_t
@@ -13,7 +11,8 @@ class ParametersController : public rtos::task<>
         IDLE,
         GET_FIRE_POWER,
         GET_PLAYER_NUMBER,
-        GAME_IS_RUNNING
+        GAME_IS_RUNNING,
+
     };
 
 private:
@@ -24,10 +23,15 @@ private:
     RunGameController &runGameController;
 
 public:
-    ParametersController(Toetsenbord4x4<1> &keypad, RunGameController &runGameController, unsigned int priority) 
-    : rtos::task<>(priority, "PARAMETERS_TAAK"), KeyChannel(this, "KEY_CHANNEL"), keypad(keypad), runGameController(runGameController)
+    ParametersController(Toetsenbord4x4<1> &keypad, RunGameController &runGameController, unsigned int priority)
+        : rtos::task<2000>(priority, "PARAMETERS_TAAK"), KeyChannel(this, "KEY_CHANNEL"), keypad(keypad), runGameController(runGameController)
     {
         keypad.addListener(this);
+    }
+
+    void KeyPressed(char KeyID) override
+    {
+        KeyChannel.write(KeyID);
     }
 
 private:
@@ -86,12 +90,15 @@ private:
             }
             case GAME_IS_RUNNING:
             {
-                RunGameController.MeldGameParameters(PlayerID, WeaponID);
+                runGameController.MeldGameParameters(PlayerID, WeaponID);
 
+                hwlib::wait_ms(300000000);
                 break;
             }
-            
+
             break;
+            }
+            hwlib::wait_ms(200);
         }
     }
 };

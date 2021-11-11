@@ -9,7 +9,7 @@ public:
 };
 
 template <unsigned int maxNumberOfListeners>
-class Toetsenbord4x4  : public rtos::task<>{
+class Toetsenbord4x4  : public rtos::task<2000>{
 
 private:
 	hwlib::keypad<16> &keypad;
@@ -17,7 +17,7 @@ private:
 	unsigned int currentNumberOfListeners = 0;
 	
 public:
-	Toetsenbord4x4(hwlib::keypad<16> &keypad, unsigned int priority) : rtos::task<>(priority, "TOETSENBORD_TAAK"), keypad(keypad)
+	Toetsenbord4x4(hwlib::keypad<16> &keypad, unsigned int priority) : rtos::task<2000>(priority, "TOETSENBORD_TAAK"), keypad(keypad)
 	{
 		unsigned int i=0;
 		for(i=0;i<maxNumberOfListeners;i++)

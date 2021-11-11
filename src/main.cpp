@@ -13,12 +13,14 @@
 #include "Toetsenbord4x4.hpp"
 #include "InitGameController.h"
 #include "Speeltijd.h"
+#include "ParametersController.h"
+#include "IRReceiver.h"
 
 int main()
 {
   // logger
-  auto dumpButton = hwlib::target::pin_in(hwlib::target::pins::d10);
-  Logger logger(dumpButton, 13);
+  // auto dumpButton = hwlib::target::pin_in(hwlib::target::pins::d10);
+  // Logger logger(dumpButton, 13);
 
   // RunGameController &runGameController;
 
@@ -48,7 +50,7 @@ int main()
 
   Toetsenbord4x4<1> Toetsenbord(keypad, 9);
 
-  InitGameController IGC(Toetsenbord, 8, sendIRcontroller);
+  // InitGameController IGC(Toetsenbord, 8, sendIRcontroller);
 
   // // oleddisplay
   auto scl = hwlib::target::pin_oc(hwlib::target::pins::scl);
@@ -63,7 +65,7 @@ int main()
   OledDisplay oledDisplay(display8x8, display16x16, 11);
 
   // testing IR
-  SendTest sendTest(sendIRcontroller, speakerController, oledDisplay, 12);
+  // SendTest sendTest(sendIRcontroller, speakerController, oledDisplay, 12);
 
   //  rungamecontroller
 
@@ -83,10 +85,14 @@ int main()
 
   ReceiveIRController receiveIRcontroller(runGameController, 5); // priority MessageDecoder, priority IRReceiver
 
+  ParametersController parametersController(Toetsenbord, runGameController, 14);
+
   // messagedecoder
   auto tsopSignal = hwlib::target::pin_in(hwlib::target::pins::d8);
   auto led = hwlib::target::pin_out(hwlib::target::pins::d9);
-  MessageDecoder messageDecoder(tsopSignal, led, receiveIRcontroller, 4, 0);
+  IRReceiver<1> irReceiver(tsopSignal, led, 0);
+
+  MessageDecoder messageDecoder(irReceiver, receiveIRcontroller, 4);
 
   rtos::run();
 }

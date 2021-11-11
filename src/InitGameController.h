@@ -1,8 +1,9 @@
 #pragma once
+
 #include "Toetsenbord4x4.hpp"
 #include "SendIRController.h"
 
-class InitGameController : public rtos::task<>, public KeyPadListener
+class InitGameController : public rtos::task<2000>, public KeyPadListener
 {
 
     enum state_t
@@ -21,12 +22,12 @@ private:
     SendIRController &sendIRController;
 
 public:
-    InitGameController(Toetsenbord4x4<1> &keypad, unsigned int priority, SendIRController &sendIRController) : rtos::task<>(priority, "INITGAME_TAAK"), KeyChannel(this, "KEY_CHANNEL"), keypad(keypad), sendIRController(sendIRController)
+    InitGameController(Toetsenbord4x4<1> &keypad, unsigned int priority, SendIRController &sendIRController) : rtos::task<2000>(priority, "INITGAME_TAAK"), KeyChannel(this, "KEY_CHANNEL"), keypad(keypad), sendIRController(sendIRController)
     {
         keypad.addListener(this);
     }
 
-    void KeyPressed(char KeyID)
+    void KeyPressed(char KeyID) override
     {
         KeyChannel.write(KeyID);
     }

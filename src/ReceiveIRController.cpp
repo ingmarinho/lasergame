@@ -22,7 +22,8 @@ void ReceiveIRController::main()
     uint16_t res;
 
     for (;;)
-    {
+    {            
+
         wait(messageChannel);
         message = messageChannel.read();
 
