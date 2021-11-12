@@ -4,6 +4,7 @@
 
 #include "DamageInfo.h"
 
+/// entity to specify weapon types
 template <unsigned int maxNumberOfWeapons>
 class DamageList
 {
@@ -37,6 +38,7 @@ public:
         Weapons[9] = Weapon9;
     }
 
+    /// get name of specific weapon
     const char *GetName(unsigned int i)
     {
         if (i < maxNumberOfWeapons)
@@ -46,6 +48,7 @@ public:
         return "";
     }
 
+    /// get damage of specific weapon
     int GetDamage(unsigned int i)
     {
         if (i < maxNumberOfWeapons)
@@ -55,6 +58,7 @@ public:
         return 0;
     }
 
+    /// get reload time of specific weapon
     int GetDelay(unsigned int i)
     {
         if (i < maxNumberOfWeapons)

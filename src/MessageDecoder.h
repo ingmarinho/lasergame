@@ -4,7 +4,7 @@
 #include "ReceiveIRController.h"
 
 class ReceiveIRController;
-///
+
 class MessageDecoder : public rtos::task<2000>, public IRReceiverListener
 {
 

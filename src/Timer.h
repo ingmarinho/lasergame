@@ -4,8 +4,7 @@
 #include "OledDisplay.h"
 #include "RunGameController.h"
 
-//class RunGameController
-
+/// timer to countdown the remaining gametime
 class Timer : public rtos::task<1500>
 {
 
@@ -19,12 +18,12 @@ class Timer : public rtos::task<1500>
 private:
     state_t state = STARTGAME;
 
-    rtos::flag StartFlag;
-    rtos::flag StopFlag;
-    rtos::timer delay;
+    rtos::flag StartFlag; /// flag to start the game
+    rtos::flag StopFlag; /// flag to stop the game
+    rtos::timer delay; /// timer
     OledDisplay &oledDisplay;
     Speeltijd & speeltijd;
-    int gametime;
+    int gametime; /// remaining gametime
 
 public:
     Timer(OledDisplay& oledDisplay, Speeltijd &speeltijd, unsigned int priority) 
@@ -32,12 +31,14 @@ public:
     {
         gametime = speeltijd.GetGameTime();
     }
-    
+
+    /// set the startflag
     void startTimer()
     {
     	StartFlag.set();
     }
-    
+
+    /// set the stopflag
     void stopFlag()
     {
         StopFlag.set();

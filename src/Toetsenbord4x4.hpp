@@ -8,11 +8,12 @@ public:
 	virtual void KeyPressed (char KeyID);
 };
 
+/// keypad to enter player parameters and gametime and communicate to initgamecontroller and parametercontroller
 template <unsigned int maxNumberOfListeners>
 class Toetsenbord4x4  : public rtos::task<2000>{
 
 private:
-	hwlib::keypad<16> &keypad;
+	hwlib::keypad<16> &keypad; /// keypad
 	std::array< KeyPadListener*, maxNumberOfListeners> keypadListeners;
 	unsigned int currentNumberOfListeners = 0;
 	

@@ -10,6 +10,7 @@ public:
 	virtual void pauseDetected(int pause);
 };
 
+/// reveives IR signals and communicates the pauses inbetween bits to messagedecoder
 template <unsigned int maxNumberOfListeners>
 class IRReceiver : public rtos::task<1500>
 {
@@ -22,11 +23,11 @@ class IRReceiver : public rtos::task<1500>
 private:
 	state_t state = IDLE;
 
-	rtos::clock mainClock;
+	rtos::clock mainClock; /// rtos clock for precise timing
 
 	std::array<IRReceiverListener *, maxNumberOfListeners> IRReceiverListenerArr;
 	unsigned int currentNumberOfListeners = 0;
-	hwlib::target::pin_in &tsopSignal;
+	hwlib::target::pin_in &tsopSignal; /// pin connected to data pin of IR receiver
 	hwlib::target::pin_out &led;
 
 public:
