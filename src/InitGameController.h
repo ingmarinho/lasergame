@@ -17,7 +17,7 @@ class InitGameController : public rtos::task<2000>, public KeyPadListener
 private:
     state_t state = IDLE;
 
-    rtos::channel<char, 1024> KeyChannel;
+    rtos::channel<char, 1024> KeyChannel; /// channel for the keys that have been pressed
     Toetsenbord4x4<1> &keypad;
     SendIRController &sendIRController;
 
@@ -27,6 +27,7 @@ public:
         keypad.addListener(this);
     }
 
+    ///
     void KeyPressed(char KeyID) override
     {
         KeyChannel.write(KeyID);
